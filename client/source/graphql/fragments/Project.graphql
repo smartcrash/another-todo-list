@@ -1,6 +1,7 @@
 fragment ProjectFragment on Project {
   id
   title
+  slug
   createdAt
   updatedAt
   deletedAt

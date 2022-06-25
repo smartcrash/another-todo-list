@@ -77,6 +77,7 @@ export type Project = {
   createdAt: Scalars['String'];
   deletedAt?: Maybe<Scalars['String']>;
   id: Scalars['Float'];
+  slug: Scalars['String'];
   title: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -87,11 +88,17 @@ export type Query = {
   allProjects: Array<Project>;
   currentUser?: Maybe<User>;
   findProjectById?: Maybe<Project>;
+  findProjectBySlug?: Maybe<Project>;
 };
 
 
 export type QueryFindProjectByIdArgs = {
   id: Scalars['Int'];
+};
+
+
+export type QueryFindProjectBySlugArgs = {
+  slug: Scalars['String'];
 };
 
 export type User = {
@@ -103,7 +110,7 @@ export type User = {
   username: Scalars['String'];
 };
 
-export type ProjectFragmentFragment = { __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null };
+export type ProjectFragmentFragment = { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
 export type UserFragmentFragment = { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string };
 
@@ -112,7 +119,7 @@ export type CreateProjectMutationVariables = Exact<{
 }>;
 
 
-export type CreateProjectMutation = { __typename?: 'Mutation', project: { __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null } };
+export type CreateProjectMutation = { __typename?: 'Mutation', project: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type CreateUserMutationVariables = Exact<{
   password: Scalars['String'];
@@ -153,22 +160,30 @@ export type RestoreProjectMutation = { __typename?: 'Mutation', id?: number | nu
 export type AllDeletedProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllDeletedProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+export type AllDeletedProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
 export type AllProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+export type AllProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string } | null };
 
+export type FindProjectBySlugQueryVariables = Exact<{
+  slug: Scalars['String'];
+}>;
+
+
+export type FindProjectBySlugQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
+
 export const ProjectFragmentFragmentDoc = gql`
     fragment ProjectFragment on Project {
   id
   title
+  slug
   createdAt
   updatedAt
   deletedAt
@@ -287,4 +302,15 @@ export const CurrentUserDocument = gql`
 
 export function useCurrentUserQuery(options?: Omit<Urql.UseQueryArgs<CurrentUserQueryVariables>, 'query'>) {
   return Urql.useQuery<CurrentUserQuery>({ query: CurrentUserDocument, ...options });
+};
+export const FindProjectBySlugDocument = gql`
+    query FindProjectBySlug($slug: String!) {
+  project: findProjectBySlug(slug: $slug) {
+    ...ProjectFragment
+  }
+}
+    ${ProjectFragmentFragmentDoc}`;
+
+export function useFindProjectBySlugQuery(options: Omit<Urql.UseQueryArgs<FindProjectBySlugQueryVariables>, 'query'>) {
+  return Urql.useQuery<FindProjectBySlugQuery>({ query: FindProjectBySlugDocument, ...options });
 };

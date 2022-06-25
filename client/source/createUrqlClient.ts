@@ -22,6 +22,8 @@ import {
   DeleteProjectMutation,
   DeleteProjectMutationVariables,
   LoginWithPasswordMutation,
+  Project,
+  ProjectFragmentFragmentDoc,
   RestoreProjectMutation,
   RestoreProjectMutationVariables
 } from "./generated/graphql";
@@ -67,7 +69,11 @@ export const createUrqlClient = () => createClient({
           },
 
           deleteProject(result: DeleteProjectMutation, args: DeleteProjectMutationVariables, cache, info) {
+            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.id }) as Project | null
+
             cache.invalidate('Query', 'allDeletedProjects')
+            cache.invalidate('Query', 'findProjectById', { id: args.id })
+            cache.invalidate('Query', 'findProjectBySlug', { slug: project?.slug! })
 
             cache.updateQuery(
               { query: AllProjectsDocument },

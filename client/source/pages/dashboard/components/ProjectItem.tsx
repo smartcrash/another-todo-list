@@ -17,10 +17,16 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
   const isHover = useHover(hoverRef);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  const { id, title, deletedAt } = project;
+  const { title, slug, deletedAt } = project;
 
   return (
-    <Link to={route("project", { id })}>
+    <Link
+      to={route("project", { slug })}
+      onClick={(event) => {
+        // NOTE: Prevent redirection if the project is deleted
+        if (deletedAt) event.preventDefault();
+      }}
+    >
       <Box
         px={3}
         mx={-3}
