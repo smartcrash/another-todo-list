@@ -19,7 +19,6 @@ export const ProjectAdder = ({ onConfirm }: ProjectAdderProps) => {
     <ProjectForm onConfirm={confirmProject} onCancel={() => setAddingProject(false)} />
   ) : (
     <Button
-      colorScheme={"blackAlpha"}
       variant={"link"}
       size={"sm"}
       onClick={() => setAddingProject(true)}
