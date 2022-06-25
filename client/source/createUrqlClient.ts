@@ -49,10 +49,13 @@ export const createUrqlClient = () => createClient({
           },
 
           logout(result, args, cache, info) {
-            cache.updateQuery(
-              { query: CurrentUserDocument },
-              () => ({ currentUser: null })
-            )
+            // NOTE: I invalidate every query manually, since there is not a direct or simple
+            //       way to invalidate the whole cache at once.
+            // See: https://github.com/FormidableLabs/urql/issues/297
+
+            cache.invalidate('Query', 'currentUser')
+            cache.invalidate('Query', 'allProjects')
+            cache.invalidate('Query', 'allDeletedProjects')
           },
 
           createProject(result: CreateProjectMutation, args: CreateProjectMutationVariables, cache, info) {
