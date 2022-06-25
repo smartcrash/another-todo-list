@@ -35,6 +35,7 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
         bg={isHover || isOpen ? "gray.200" : undefined}
         position={"relative"}
         ref={hoverRef}
+        data-testid={`project-item`}
       >
         <Text>{title}</Text>
 
@@ -62,6 +63,7 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
                 icon={<TrashIcon />}
                 // NOTE: Don't show this button if is already deleted
                 hidden={!!deletedAt}
+                data-testid={"delete-project"}
               >
                 Delete project
               </MenuItem>
@@ -71,6 +73,7 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
                 icon={<ArchiveIcon />}
                 // NOTE: Only show this button if it was soft-deleted
                 hidden={!deletedAt}
+                data-testid={"restore-project"}
               >
                 Restore project
               </MenuItem>

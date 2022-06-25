@@ -37,7 +37,7 @@ export const Aside = () => {
 
         <Spacer h={5} />
 
-        <ProjectList isLoaded={!fetching} isEmpty={!data.projects.length}>
+        <ProjectList isLoaded={!fetching} isEmpty={!data.projects.length} data-testid={"project-list"}>
           {data.projects.map((project) => (
             <ProjectItem project={project} key={project.id} onDelete={({ id }) => deleteProject({ id })} />
           ))}
@@ -49,7 +49,13 @@ export const Aside = () => {
 
         <Divider my={4} borderColor={"gray.300"} />
 
-        <Button colorScheme={"blackAlpha"} variant={"link"} size={"sm"} onClick={toggleShowDeleted}>
+        <Button
+          colorScheme={"blackAlpha"}
+          variant={"link"}
+          size={"sm"}
+          onClick={toggleShowDeleted}
+          data-testid={"toggle-show-deleted"}
+        >
           {showDeleted ? "Hide" : "Show"} deleted
         </Button>
 
@@ -60,6 +66,7 @@ export const Aside = () => {
             isLoaded={!fetchingDeleted}
             isEmpty={!deleted.projects.length}
             placeholder={"No deleted projects"}
+            data-testid={"deleted-project-list"}
           >
             {deleted.projects.map((project) => (
               <ProjectItem project={project} onRestore={({ id }) => restoreProject({ id })} key={project.id} />
