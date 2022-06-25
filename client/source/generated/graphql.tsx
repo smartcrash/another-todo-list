@@ -157,6 +157,14 @@ export type RestoreProjectMutationVariables = Exact<{
 
 export type RestoreProjectMutation = { __typename?: 'Mutation', id?: number | null };
 
+export type UpdateProjectMutationVariables = Exact<{
+  id: Scalars['Int'];
+  title?: InputMaybe<Scalars['String']>;
+}>;
+
+
+export type UpdateProjectMutation = { __typename?: 'Mutation', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
+
 export type AllDeletedProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -269,6 +277,17 @@ export const RestoreProjectDocument = gql`
 
 export function useRestoreProjectMutation() {
   return Urql.useMutation<RestoreProjectMutation, RestoreProjectMutationVariables>(RestoreProjectDocument);
+};
+export const UpdateProjectDocument = gql`
+    mutation UpdateProject($id: Int!, $title: String) {
+  project: updateProject(id: $id, title: $title) {
+    ...ProjectFragment
+  }
+}
+    ${ProjectFragmentFragmentDoc}`;
+
+export function useUpdateProjectMutation() {
+  return Urql.useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UpdateProjectDocument);
 };
 export const AllDeletedProjectsDocument = gql`
     query AllDeletedProjects {

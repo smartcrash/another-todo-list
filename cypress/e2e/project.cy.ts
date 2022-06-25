@@ -80,5 +80,24 @@ describe('Project CRUD', () => {
     cy.location('pathname').should('contain', slugify(newProject))
   })
 
-  it('can edit project\'s title')
+  it('can edit project\'s title', () => {
+    const newProject = chance.sentence({ words: 2 })
+    const newTitle = chance.sentence({ words: 3 })
+
+    cy.getByTestId('add-project').click()
+    cy.getByTestId('project-form').get('input[type="text"]').type(`${newProject}{enter}`)
+    cy.getByTestId('project-list').contains(newProject).click()
+
+    cy.location('pathname').should('contain', slugify(newProject))
+
+    cy.getByTestId('title-form') // Get the content editable title
+      .contains(newProject) // Target the preview
+      .click() // Click to enter edit mode
+      .focused() // Get the focues element, whitch should be the content editable input
+      .clear() // Remove previous title
+      .type(`${newTitle}{enter}`) // Enter new title
+
+    // The pathname should have changed
+    cy.location('pathname').should('contain', slugify(newTitle))
+  })
 })
