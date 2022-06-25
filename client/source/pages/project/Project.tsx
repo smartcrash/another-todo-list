@@ -1,16 +1,22 @@
-import { EditableInput, EditablePreview, Spacer, Stack } from "@chakra-ui/react";
+import { EditableInput, EditablePreview, Spacer } from "@chakra-ui/react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
-import { NonEmptyEditable, Container } from "../../components";
-import { useAddTodoMutation, useFindProjectBySlugQuery, useUpdateProjectMutation } from "../../generated/graphql";
+import { Container, NonEmptyEditable } from "../../components";
+import {
+  useAddTodoMutation,
+  useFindProjectBySlugQuery,
+  useUpdateProjectMutation,
+  useUpdateTodoMutation,
+} from "../../generated/graphql";
 import { route } from "../../routes";
-import { TodoAdder } from "./components";
+import { TodoAdder, TodoItem, TodoList } from "./components";
 
 export const Project = () => {
   const { slug = "" } = useParams<{ slug: string }>();
   const [{ data, fetching, error }] = useFindProjectBySlugQuery({ variables: { slug } });
   const [, updateProject] = useUpdateProjectMutation();
   const [, addTodo] = useAddTodoMutation();
+  const [, updateTodo] = useUpdateTodoMutation();
 
   if (fetching) return <>Loading</>; // TODO: Add skeleton
   if (!data && error) return <>Something went wrong: {error.message}</>;
@@ -38,7 +44,7 @@ export const Project = () => {
     <>
       <Helmet title={title} />
 
-      <Container maxW={"lg"} mx={"auto"}>
+      <Container maxW={"lg"}>
         <NonEmptyEditable
           defaultValue={title}
           onSubmit={onTitleUpdate}
@@ -52,11 +58,11 @@ export const Project = () => {
 
         <Spacer h={10} />
 
-        <Stack>
+        <TodoList>
           {todos.map((todo) => (
-            <div key={todo.id}>{todo.content}</div>
+            <TodoItem todo={todo} onUpdate={(updatedTodo) => updateTodo(updatedTodo)} key={todo.id} />
           ))}
-        </Stack>
+        </TodoList>
 
         <Spacer h={5} />
 

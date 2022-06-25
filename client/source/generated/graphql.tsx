@@ -207,6 +207,15 @@ export type UpdateProjectMutationVariables = Exact<{
 
 export type UpdateProjectMutation = { __typename?: 'Mutation', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
 
+export type UpdateTodoMutationVariables = Exact<{
+  id: Scalars['Int'];
+  content?: InputMaybe<Scalars['String']>;
+  completed?: InputMaybe<Scalars['Boolean']>;
+}>;
+
+
+export type UpdateTodoMutation = { __typename?: 'Mutation', todo: { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } };
+
 export type AllDeletedProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -351,6 +360,17 @@ export const UpdateProjectDocument = gql`
 
 export function useUpdateProjectMutation() {
   return Urql.useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UpdateProjectDocument);
+};
+export const UpdateTodoDocument = gql`
+    mutation UpdateTodo($id: Int!, $content: String, $completed: Boolean) {
+  todo: updateTodo(id: $id, content: $content, completed: $completed) {
+    ...TodoFragment
+  }
+}
+    ${TodoFragmentFragmentDoc}`;
+
+export function useUpdateTodoMutation() {
+  return Urql.useMutation<UpdateTodoMutation, UpdateTodoMutationVariables>(UpdateTodoDocument);
 };
 export const AllDeletedProjectsDocument = gql`
     query AllDeletedProjects {
