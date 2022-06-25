@@ -2,9 +2,9 @@ import { compile } from 'path-to-regexp';
 
 export const routes = {
   index: '/',
-
   login: '/login',
   signUp: '/signup',
+  project: '/:id',
 };
 
 export const route = (name: keyof typeof routes, params = {}) => {

@@ -35,7 +35,7 @@ export const Aside = () => {
           Projects
         </Heading>
 
-        <Divider h={5} />
+        <Spacer h={5} />
 
         <ProjectList isLoaded={!fetching} isEmpty={!data.projects.length}>
           {data.projects.map((project) => (
@@ -43,11 +43,11 @@ export const Aside = () => {
           ))}
         </ProjectList>
 
-        <Divider h={5} />
+        <Spacer h={5} />
 
         <ProjectAdder onConfirm={(title) => createProject({ title })} />
 
-        <Divider h={8} />
+        <Divider my={4} borderColor={"gray.300"} />
 
         <Button colorScheme={"blackAlpha"} variant={"link"} size={"sm"} onClick={toggleShowDeleted}>
           {showDeleted ? "Hide" : "Show"} deleted
