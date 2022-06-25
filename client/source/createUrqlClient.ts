@@ -10,6 +10,8 @@ import {
 } from "urql";
 import { API_URL } from './constants';
 import {
+  AddTodoMutation,
+  AddTodoMutationVariables,
   AllDeletedProjectsDocument,
   AllDeletedProjectsQuery,
   AllProjectsDocument,
@@ -21,6 +23,8 @@ import {
   CurrentUserQuery,
   DeleteProjectMutation,
   DeleteProjectMutationVariables,
+  FindProjectBySlugDocument,
+  FindProjectBySlugQuery,
   LoginWithPasswordMutation,
   Project,
   ProjectFragmentFragmentDoc,
@@ -89,6 +93,25 @@ export const createUrqlClient = () => createClient({
               (data: AllDeletedProjectsQuery | null) => ({ projects: (data?.projects || []).filter((project) => project.id !== args.id) })
             )
           },
+
+          addTodo(result: AddTodoMutation, args: AddTodoMutationVariables, cache, info) {
+            // This query may return `null` or `undefined`
+            if (!result.todo) return
+
+            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.projectId }) as Project | null
+
+            cache.updateQuery(
+              {
+                query: FindProjectBySlugDocument,
+                variables: { slug: project?.slug }
+              },
+              (data: FindProjectBySlugQuery | null) => {
+                if (!data || !data.project) return data
+                data.project.todos.push(result.todo!)
+                return data
+              }
+            )
+          }
         },
       },
     }),

@@ -1,4 +1,4 @@
-import { Arg, FieldResolver, Int, Mutation, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, FieldResolver, Int, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
 import { Todo } from "../entity";
 import { AllowIf } from "../middlewares/AllowIf";
 import { Authenticate } from "../middlewares/Authenticate";
@@ -15,7 +15,7 @@ export class TodoResolver {
   @UseMiddleware(AllowIf('create-todo'))
   @Mutation(() => Todo, { nullable: true })
   async addTodo(
-    @Arg('content') content: string,
+    @Arg('content',) content: string,
     @Arg('projectId', () => Int) projectId: number,
   ): Promise<Todo | null> {
     if (!content.length) return null

@@ -1,21 +1,22 @@
-import { EditableInput, EditablePreview } from "@chakra-ui/react";
+import { EditableInput, EditablePreview, Spacer, Stack } from "@chakra-ui/react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
-import { NonEmptyEditable } from "../../components";
-import { useFindProjectBySlugQuery, useUpdateProjectMutation } from "../../generated/graphql";
+import { NonEmptyEditable, Container } from "../../components";
+import { useAddTodoMutation, useFindProjectBySlugQuery, useUpdateProjectMutation } from "../../generated/graphql";
 import { route } from "../../routes";
+import { TodoAdder } from "./components";
 
 export const Project = () => {
   const { slug = "" } = useParams<{ slug: string }>();
   const [{ data, fetching, error }] = useFindProjectBySlugQuery({ variables: { slug } });
   const [, updateProject] = useUpdateProjectMutation();
+  const [, addTodo] = useAddTodoMutation();
 
   if (fetching) return <>Loading</>; // TODO: Add skeleton
   if (!data && error) return <>Something went wrong: {error.message}</>;
   if (!data?.project) return <Navigate to={route("index")} />;
 
-  const { id, title } = data.project;
-  console.log({ id });
+  const { id, title, todos } = data.project;
 
   const onTitleUpdate = async (title: string) => {
     const result = await updateProject({ id, title });
@@ -37,16 +38,30 @@ export const Project = () => {
     <>
       <Helmet title={title} />
 
-      <NonEmptyEditable
-        defaultValue={title}
-        onSubmit={onTitleUpdate}
-        fontSize={"3xl"}
-        fontWeight={"bold"}
-        data-testid={"title-form"}
-      >
-        <EditablePreview />
-        <EditableInput />
-      </NonEmptyEditable>
+      <Container maxW={"lg"} mx={"auto"}>
+        <NonEmptyEditable
+          defaultValue={title}
+          onSubmit={onTitleUpdate}
+          fontSize={"3xl"}
+          fontWeight={"bold"}
+          data-testid={"title-form"}
+        >
+          <EditablePreview />
+          <EditableInput />
+        </NonEmptyEditable>
+
+        <Spacer h={10} />
+
+        <Stack>
+          {todos.map((todo) => (
+            <div key={todo.id}>{todo.content}</div>
+          ))}
+        </Stack>
+
+        <Spacer h={5} />
+
+        <TodoAdder onConfirm={(content) => addTodo({ content, projectId: id })} />
+      </Container>
     </>
   );
 };

@@ -1,5 +1,8 @@
 query FindProjectBySlug($slug: String!) {
   project: findProjectBySlug(slug: $slug) {
     ...ProjectFragment
+    todos {
+      ...TodoFragment
+    }
   }
 }

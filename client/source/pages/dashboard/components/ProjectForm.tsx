@@ -1,4 +1,4 @@
-import { AdderForm } from "./AdderForm";
+import { AdderForm } from "../../../components";
 
 interface ProjectFormProps {
   onConfirm: (title: string) => void;
