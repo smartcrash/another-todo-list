@@ -1,4 +1,4 @@
-import { EditableInput, EditablePreview, Spacer } from "@chakra-ui/react";
+import { Button, EditableInput, EditablePreview, HStack, Spacer } from "@chakra-ui/react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
 import { Container, NonEmptyEditable } from "../../components";
@@ -9,11 +9,13 @@ import {
   useUpdateProjectMutation,
   useUpdateTodoMutation,
 } from "../../generated/graphql";
+import { useToggle } from "../../hooks";
 import { route } from "../../routes";
 import { TodoAdder, TodoItem, TodoList } from "./components";
 
 export const Project = () => {
   const { slug = "" } = useParams<{ slug: string }>();
+  const [showCompleted, toggleShowCompleted] = useToggle(true);
   const [{ data, fetching, error }] = useFindProjectBySlugQuery({ variables: { slug } });
   const [, updateProject] = useUpdateProjectMutation();
   const [, addTodo] = useAddTodoMutation();
@@ -58,18 +60,38 @@ export const Project = () => {
           <EditableInput />
         </NonEmptyEditable>
 
-        <Spacer h={10} />
+        <Spacer h={2} />
 
-        <TodoList>
-          {todos.map((todo) => (
-            <TodoItem
-              todo={todo}
-              onUpdate={(updatedTodo) => updateTodo(updatedTodo)}
-              onDelete={({ id }) => removeTodo({ id })}
-              key={todo.id}
-            />
-          ))}
-        </TodoList>
+        {!!todos.length && (
+          <>
+            <HStack justifyContent={"flex-end"}>
+              <Button
+                colorScheme={"blackAlpha"}
+                variant={"ghost"}
+                size={"xs"}
+                onClick={toggleShowCompleted}
+                data-testid={"toggle-show-completed"}
+              >
+                {showCompleted ? "Hide" : "Show"} completed
+              </Button>
+            </HStack>
+
+            <Spacer h={2} />
+
+            <TodoList>
+              {todos
+                .filter((todo) => (!showCompleted ? !todo.completed : true))
+                .map((todo) => (
+                  <TodoItem
+                    todo={todo}
+                    onUpdate={(updatedTodo) => updateTodo(updatedTodo)}
+                    onDelete={({ id }) => removeTodo({ id })}
+                    key={todo.id}
+                  />
+                ))}
+            </TodoList>
+          </>
+        )}
 
         <Spacer h={5} />
 

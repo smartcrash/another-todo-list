@@ -36,6 +36,7 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
         <Checkbox
           mt={1}
           defaultChecked={completed}
+          colorScheme={"primary"}
           onChange={(event) => onUpdate({ ...todo, completed: event.target.checked })}
           size={"lg"}
           borderColor={"gray.600"}

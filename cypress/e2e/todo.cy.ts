@@ -84,4 +84,56 @@ describe('Todo CRUD', () => {
         .should('not.contain.text', currentItem)
     })
   })
+
+  it.only('can hide completed tasks', () => {
+    // Remove any existing task to have a clean state
+    cy.document().then(($document) => {
+      if ($document.querySelectorAll('[data-testid="delete-todo"]').length) {
+        cy.getByTestId('delete-todo').click({ force: true, multiple: true })
+        cy.getByTestId('todo-item').should('have.length', 1);
+      }
+    });
+
+    const tasks = [
+      chance.word(),
+      chance.word(),
+    ]
+
+    // Create 3 tasks
+    tasks.forEach((newItem) => {
+      cy.getByTestId('add-todo').click()
+      cy.getByTestId('todo-form').get('input[type="text"]').type(`${newItem}{enter}`)
+    })
+
+    cy.getByTestId('todo-item')
+      .should('have.length', 2)
+      .last()
+      .closest('[data-testid="todo-item"]')
+      .find('input[type=checkbox]')
+      .check({ force: true });
+
+
+    cy.getByTestId('toggle-show-completed').click()
+
+    // After filtering, we can assert that there is only the one
+    // complete item in the list.
+    cy.getByTestId('todo-item')
+      .should('have.length', 1)
+      .first()
+      .should('contain.text', tasks[0])
+
+    // For good measure, let's also assert that the task we checked off
+    // does not exist on the page.
+    cy.contains(tasks[1]).should('not.exist')
+
+    // Now toggle back and check that all items are in the list again
+
+    cy.getByTestId('toggle-show-completed').click()
+
+    cy.getByTestId('todo-item')
+      .should('have.length', 2)
+
+    cy.contains(tasks[0]).should('be.visible')
+    cy.contains(tasks[1]).should('be.visible')
+  })
 })
