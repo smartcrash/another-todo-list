@@ -1,7 +1,7 @@
+import { Text, Box, Button, ButtonGroup, Heading, Stack } from "@chakra-ui/react";
 import { Helmet } from "react-helmet";
-import { Box, Button, Stack, VStack, Heading, Text } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
-import { Container, Input, Link, PasswordInput } from "../../components";
+import { Link, Container, Input, PasswordInput } from "../../components";
 import { useAuth } from "../../hooks/useAuth";
 import { route } from "../../routes";
 
@@ -38,92 +38,84 @@ export const SignUp = () => {
     <>
       <Helmet title={"Sign up"} />
 
-      <Container pt={{ base: 16, sm: 24 }} pb={10} px={6}>
-        <VStack alignItems={"stretch"} flexGrow={1} spacing={{ base: 12, sm: 20 }}>
-          <VStack alignItems={{ base: "flex-start", sm: "center" }}>
-            <Heading fontSize={{ base: "5xl", sm: "5xl" }}>Create new account</Heading>
-            <Text>
+      <Container pt={{ base: 16, sm: 24 }} pb={10} px={6} maxW={"lg"} mx={"auto"}>
+        <Stack spacing={16}>
+          <Heading fontSize={{ base: "4xl", sm: "4xl" }}>Create new account</Heading>
+
+          <Stack as={"form"} onSubmit={onSubmit} justifyContent={"center"} alignItems={"stretch"} spacing={8}>
+            <Box flexGrow={1}>
+              <Input
+                label={"Username"}
+                name={"username"}
+                autoComplete={"username"}
+                placeholder={"jhon doe"}
+                size={"lg"}
+                control={control}
+                rules={{ required: true }}
+                data-testid={"username"}
+              />
+            </Box>
+
+            <Box flexGrow={1}>
+              <Input
+                label={"Email"}
+                name={"email"}
+                type={"email"}
+                size={"lg"}
+                placeholder={"jhondoe@example.com"}
+                autoComplete={"email"}
+                control={control}
+                rules={{ required: true }}
+                data-testid={"email"}
+              />
+            </Box>
+
+            <Box flexGrow={1}>
+              <PasswordInput
+                label={"Password"}
+                name={"password"}
+                size={"lg"}
+                placeholder={"At least +4 chars"}
+                autoComplete={"new-password"}
+                control={control}
+                rules={{ required: true }}
+                data-testid={"password"}
+              />
+            </Box>
+
+            <Box flexGrow={1}>
+              <PasswordInput
+                label={"Confirm password"}
+                name={"passwordConfirm"}
+                size={"lg"}
+                placeholder={"••••••"}
+                autoComplete={"off"}
+                control={control}
+                rules={{ required: true }}
+                data-testid={"passwordConfirm"}
+              />
+            </Box>
+
+            <Button isLoading={isSubmitting} type={"submit"} data-testid={"submit"} size={"lg"}>
+              Create account
+            </Button>
+
+            <Text textAlign={"center"} fontSize={"lg"}>
               Already have an account?{" "}
-              <Link color={"primary.500"} to={route("login")}>
+              <Link color={"blue"} to={route("login")}>
                 Log in
               </Link>
             </Text>
-          </VStack>
 
-          <Stack spacing={8}>
-            <Stack as={"form"} onSubmit={onSubmit} justifyContent={"center"} alignItems={"center"} spacing={8}>
-              <VStack alignItems={"stretch"} spacing={6} w={"full"} maxW={"3xl"}>
-                <Stack direction={{ base: "column", sm: "row" }} spacing={6}>
-                  <Box flexGrow={1}>
-                    <Input
-                      label={"Username"}
-                      name={"username"}
-                      autoComplete={"username"}
-                      placeholder={"jhon doe"}
-                      size={"lg"}
-                      control={control}
-                      rules={{ required: true }}
-                      data-testid={"username"}
-                    />
-                  </Box>
-
-                  <Box flexGrow={1}>
-                    <Input
-                      label={"Email"}
-                      name={"email"}
-                      type={"email"}
-                      size={"lg"}
-                      placeholder={"jhondoe@example.com"}
-                      autoComplete={"email"}
-                      control={control}
-                      rules={{ required: true }}
-                      data-testid={"email"}
-                    />
-                  </Box>
-                </Stack>
-
-                <Stack direction={{ base: "column", sm: "row" }} spacing={6}>
-                  <Box flexGrow={1}>
-                    <PasswordInput
-                      label={"Password"}
-                      name={"password"}
-                      size={"lg"}
-                      placeholder={"At least +4 chars"}
-                      autoComplete={"new-password"}
-                      control={control}
-                      rules={{ required: true }}
-                      data-testid={"password"}
-                    />
-                  </Box>
-
-                  <Box flexGrow={1}>
-                    <PasswordInput
-                      label={"Confirm password"}
-                      name={"passwordConfirm"}
-                      size={"lg"}
-                      placeholder={"••••••"}
-                      autoComplete={"off"}
-                      control={control}
-                      rules={{ required: true }}
-                      data-testid={"passwordConfirm"}
-                    />
-                  </Box>
-                </Stack>
-              </VStack>
-
-              <Button
-                isLoading={isSubmitting}
-                type={"submit"}
-                data-testid={"submit"}
-                size={"lg"}
-                w={"full"}
-                maxW={"lg"}
-              >
-                Create account
-              </Button>
-            </Stack>
+            <ButtonGroup
+              flexDir={"column"}
+              spacing={0}
+              rowGap={6}
+              size={{ base: "lg", md: "lg" }}
+              w={"full"}
+            ></ButtonGroup>
           </Stack>
-        </VStack>
+        </Stack>
       </Container>
     </>
   );
