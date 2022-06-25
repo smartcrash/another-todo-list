@@ -1,6 +1,0 @@
-fragment CardFragment on Card {
-  id
-  title
-  description
-  index
-}

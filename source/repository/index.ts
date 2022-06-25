@@ -1,7 +1,1 @@
-export * from './BoardRepository'
-export * from './CardRepository'
-export * from './ColumnRepository'
 export * from './UserRepository'
-export * from './FavoritesRepository'
-export * from './TaskRepository'
-export * from './CommentRepository'

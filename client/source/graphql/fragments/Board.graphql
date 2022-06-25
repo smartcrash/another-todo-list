@@ -1,7 +1,0 @@
-fragment BoardFragment on Board {
-  id
-  title
-  createdAt
-  updatedAt
-  favorite
-}

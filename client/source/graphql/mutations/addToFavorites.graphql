@@ -1,3 +1,0 @@
-mutation AddToFavorites($id: Int!) {
-  addToFavorites(id: $id)
-}

@@ -1,10 +1,6 @@
 import { hash } from "argon2";
 import { Field, ObjectType } from "type-graphql";
-import { TypeormLoader } from "type-graphql-dataloader";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { Board } from "./Board";
-import { Comment } from "./Comment";
-import { Favorite } from "./Favorite";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @ObjectType()
 @Entity()
@@ -31,17 +27,6 @@ export class User {
       this.password = await hash(this.password)
     }
   }
-
-  @Field(() => [Board])
-  @OneToMany(() => Board, board => board.createdBy)
-  @TypeormLoader()
-  boards: Board[]
-
-  @OneToMany(() => Favorite, favorite => favorite.user)
-  favorites: Favorite[];
-
-  @OneToMany(() => Comment, comment => comment.user)
-  comments: Comment[]
 
   @Field(() => String)
   @CreateDateColumn()

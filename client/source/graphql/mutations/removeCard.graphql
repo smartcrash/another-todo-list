@@ -1,3 +1,0 @@
-mutation removeCard($id: Int!) {
-  id: removeCard(id: $id)
-}

@@ -1,5 +1,0 @@
-mutation AddComment($cardId: Int!, $content: String!) {
-  comment: addComment(cardId: $cardId, content: $content) {
-    ...CommentFragment
-  }
-}

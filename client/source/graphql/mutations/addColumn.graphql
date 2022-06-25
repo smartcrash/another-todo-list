@@ -1,5 +1,0 @@
-mutation AddColumn($boardId: Int!, $title: String!) {
-  column: addColumn(boardId: $boardId, title: $title) {
-    ...ColumnFragment
-  }
-}

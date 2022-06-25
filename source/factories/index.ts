@@ -1,7 +1,1 @@
 export * from './UserFactory'
-export * from './ColumnFactory'
-export * from './CardFactory'
-export * from './BoardFactory'
-export * from './TaskFactory'
-export * from './CommentFactory'
-export * from './PasswordResetFactory'
