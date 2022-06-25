@@ -1,7 +1,7 @@
 import { Stack } from "@chakra-ui/react";
 import { Outlet } from "react-router-dom";
 import { Container } from "../../components";
-import NavBar from "../../components/NavBar";
+import NavBar from "./NavBar";
 
 export const Dashboard = () => {
   return (
