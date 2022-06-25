@@ -23,6 +23,7 @@ function App() {
             <>
               <Route path={routes.index} element={<Dashboard />}>
                 <Route path={routes.index} element={<Navigate to={routes["projects.list"]} replace />} />
+                <Route path={routes["projects.list"]} element={<div>TODO: Add this page</div>} />
               </Route>
               <Route path="*" element={<Navigate to={routes.index} replace />} />
             </>

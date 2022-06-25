@@ -5,6 +5,8 @@ export const routes = {
 
   login: '/login',
   signUp: '/signup',
+
+  'projects.list': '/projects',
 };
 
 export const route = (name: keyof typeof routes, params = {}) => {
