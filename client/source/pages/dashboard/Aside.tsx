@@ -37,7 +37,7 @@ export const Aside = () => {
 
         <Divider h={5} />
 
-        <ProjectList isLoaded={!fetching}>
+        <ProjectList isLoaded={!fetching} isEmpty={!data.projects.length}>
           {data.projects.map((project) => (
             <ProjectItem project={project} key={project.id} onDelete={({ id }) => deleteProject({ id })} />
           ))}
@@ -56,7 +56,11 @@ export const Aside = () => {
         <Spacer h={4} />
 
         <div hidden={!showDeleted}>
-          <ProjectList isLoaded={!fetchingDeleted}>
+          <ProjectList
+            isLoaded={!fetchingDeleted}
+            isEmpty={!deleted.projects.length}
+            placeholder={"No deleted projects"}
+          >
             {deleted.projects.map((project) => (
               <ProjectItem project={project} onRestore={({ id }) => restoreProject({ id })} key={project.id} />
             ))}
