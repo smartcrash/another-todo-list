@@ -10,7 +10,7 @@ const config: DataSourceOptions = {
   username: DB_USERNAME,
   password: DB_PASSWORD,
   logging: APP_DEBUG,
-  synchronize: APP_ENV === 'development',
+  synchronize: true,
   entities: [__dirname + "/entity/*{.ts,.js}"],
   migrations: [__dirname + "/migrations/*{.ts,.js}"],
   subscribers: [__dirname + "/subscribers/*{.ts,.js}"],

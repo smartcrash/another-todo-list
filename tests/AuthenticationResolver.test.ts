@@ -4,22 +4,8 @@ import { verify } from 'argon2';
 import { subHours } from 'date-fns';
 import { SESSION_COOKIE } from '../source/constants';
 import { User } from '../source/entity';
-import { PasswordResetFactory, UserFactory } from '../source/factories';
+import { UserFactory } from '../source/factories';
 import { UserRepository } from '../source/repository';
-
-const ResetPasswordMutation = `
-  mutation ResetPassword($newPassword: String!, $token: String!) {
-    resetPassword(newPassword: $newPassword, token: $token) {
-      errors {
-        field
-        message
-      }
-      user {
-        id
-      }
-    }
-  }
-`
 
 test.group('createUser', () => {
   test('should create user', async ({ expect, client }) => {
@@ -313,87 +299,6 @@ test.group('loginWithPassword', () => {
 
     expect(response.cookie(SESSION_COOKIE)).toBeDefined()
     expect(response.cookie(SESSION_COOKIE).value).not.toHaveLength(0)
-  })
-})
-
-test.group('resetPassword', (group) => {
-  test('should return error is token does not exists', async ({ expect, client }) => {
-    const queryData = {
-      query: ResetPasswordMutation,
-      variables: {
-        token: 'invalid token',
-        newPassword: '12345'
-      }
-    }
-    const response = await client.post('/').json(queryData)
-    const { data } = response.body()
-
-    expect(data.resetPassword.errors).toBeDefined()
-    expect(data.resetPassword.errors).toHaveLength(1)
-    expect(data.resetPassword.errors).toContainEqual({ field: 'token', message: 'Sorry, your token seems to have expired. Please try again.' })
-  })
-
-  test('should return error is token is expired', async ({ expect, client }) => {
-    const user = await UserFactory.create()
-    const pwdReset = await PasswordResetFactory.create({ email: user.email, createdAt: subHours(new Date(), 5) })
-
-    const queryData = {
-      query: ResetPasswordMutation,
-      variables: {
-        token: pwdReset.email,
-        newPassword: '12345'
-      }
-    }
-    const response = await client.post('/').json(queryData)
-    const { data } = response.body()
-
-    expect(data.resetPassword.errors).toBeDefined()
-    expect(data.resetPassword.errors).toHaveLength(1)
-    expect(data.resetPassword.errors).toContainEqual({ field: 'token', message: 'Sorry, your token seems to have expired. Please try again.' })
-  })
-
-  test('should handle non-existing user', async ({ expect, client }) => {
-    const pwdReset = await PasswordResetFactory.create()
-
-    const queryData = {
-      query: ResetPasswordMutation,
-      variables: {
-        token: pwdReset.token,
-        newPassword: '12345'
-      }
-    }
-    const response = await client.post('/').json(queryData)
-    const { data } = response.body()
-
-    expect(data.resetPassword.errors).toBeDefined()
-    expect(data.resetPassword.errors).toHaveLength(1)
-    expect(data.resetPassword.errors).toContainEqual({ field: 'token', message: 'User no longer exists.' })
-  })
-
-  test('should change password with token', async ({ expect, client }) => {
-    const oldPassword = faker.internet.password()
-    const newPassword = faker.internet.password()
-
-    const user = await UserFactory.create()
-    const pwdReset = await PasswordResetFactory.create({ email: user.email })
-
-    const queryData = {
-      query: ResetPasswordMutation,
-      variables: {
-        token: pwdReset.token,
-        newPassword,
-      }
-    }
-    const response = await client.post('/').json(queryData)
-    const { data } = response.body()
-
-    expect(data.resetPassword.errors).toBeNull()
-    expect(data.resetPassword.user).toBeDefined()
-    expect(data.resetPassword.user.id).toBe(user.id)
-
-    const { password } = await UserRepository.findOneBy({ id: user.id })
-    expect(await verify(password, oldPassword)).toBe(false)
-    expect(await verify(password, newPassword)).toBe(true)
   })
 })
 

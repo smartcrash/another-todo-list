@@ -1,0 +1,5 @@
+mutation UpdateProject($id: Int!, $title: String) {
+  project: updateProject(id: $id, title: $title) {
+    ...ProjectFragment
+  }
+}

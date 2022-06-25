@@ -8,6 +8,7 @@ const Login = lazy(() => import("./pages/login"));
 const SignUp = lazy(() => import("./pages/sign-up"));
 
 const Dashboard = lazy(() => import("./pages/dashboard"));
+const Project = lazy(() => import("./pages/project"));
 
 function App() {
   const [{ data, fetching }] = useCurrentUserQuery();
@@ -22,8 +23,7 @@ function App() {
           ) : user ? (
             <>
               <Route path={routes.index} element={<Dashboard />}>
-                <Route path={routes.index} element={<Navigate to={routes["projects.list"]} replace />} />
-                <Route path={routes["projects.list"]} element={<div>TODO: Add this page</div>} />
+                <Route path={routes.project} element={<Project />} />
               </Route>
               <Route path="*" element={<Navigate to={routes.index} replace />} />
             </>

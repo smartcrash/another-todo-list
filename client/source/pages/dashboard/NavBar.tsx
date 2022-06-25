@@ -1,6 +1,6 @@
 import { Avatar, Box, HStack, Menu, MenuButton, MenuDivider, MenuItem, MenuList, Text } from "@chakra-ui/react";
-import { useAuth } from "../hooks/useAuth";
-import { Container, Logo } from "./";
+import { Container, Logo } from "../../components/../components";
+import { useAuth } from "../../hooks/useAuth";
 
 function NavBar() {
   const { user, logout } = useAuth();
