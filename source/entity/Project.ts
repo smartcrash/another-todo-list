@@ -1,6 +1,9 @@
+import { kebabCase } from "lodash";
 import { Field, ObjectType } from "type-graphql";
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { User } from "./User";
+
+const uniqueId = () => (Math.random() + 1).toString(36).substring(7)
 
 @ObjectType()
 @Entity()
@@ -12,6 +15,18 @@ export class Project {
   @Field()
   @Column()
   title: string;
+
+  @Field()
+  @Column({ unique: true })
+  slug: string;
+
+  @BeforeInsert()
+  @BeforeUpdate()
+  async createSlug() {
+    if (this.title) {
+      this.slug = kebabCase(this.title) + uniqueId()
+    }
+  }
 
   @Column()
   userId: number

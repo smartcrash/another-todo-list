@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { test } from '@japa/runner';
+import { kebabCase } from 'lodash';
 import { SESSION_COOKIE } from '../source/constants';
 import { ProjectFactory } from '../source/factories';
 import { ProjectRepository } from '../source/repository';
@@ -46,6 +47,7 @@ const UpdateProjectMutation = `
     project: updateProject(id: $id, title: $title) {
       id
       title
+      slug
     }
   }
 `
@@ -92,6 +94,7 @@ test.group('createProject', () => {
 
     expect(project).toBeDefined()
     expect(project.title).toBe(title)
+    expect(project.slug.startsWith(kebabCase(title))).toBe(true)
     expect(project.userId).toBe(user.id)
   })
 })
@@ -221,6 +224,7 @@ test.group('updateProject', () => {
 
     expect(data.project.id).toBe(id)
     expect(data.project.title).toBe(title)
+    expect(data.project.slug.startsWith(kebabCase(title))).toBe(true)
   })
 
   test('should only be allowed to update if is owner', async ({ expect, client, createUser }) => {
