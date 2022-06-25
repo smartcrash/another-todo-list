@@ -24,6 +24,15 @@ const FindProjectByIdQuery = `
   }
 `
 
+const FindProjectBySlugQuery = `
+  query FindProjectBySlugQuery($slug: String!) {
+    project: findProjectBySlug(slug: $slug) {
+      id
+      title
+    }
+  }
+`
+
 const AllProjectsQuery = `
   {
     projects: allProjects {
@@ -191,6 +200,45 @@ test.group('findProjectById', () => {
     const queryData = {
       query: FindProjectByIdQuery,
       variables: { id }
+    };
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+    const { data } = response.body()
+
+    expect(data.project).toBeNull()
+  })
+})
+
+test.group('findProjectById', () => {
+  testThrowsIfNotAuthenticated({
+    query: FindProjectBySlugQuery,
+    variables: { slug: '' }
+  })
+
+  test('should return project by slug', async ({ expect, client, createUser }) => {
+    const [user, cookie] = await createUser(client)
+    const { id, slug } = await ProjectFactory.create({ userId: user.id })
+
+    const queryData = {
+      query: FindProjectBySlugQuery,
+      variables: { slug }
+    };
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+    const { data } = response.body()
+
+    expect(data.project).toBeDefined()
+    expect(data.project.id).toBe(id)
+  })
+
+  test('should return `null` if it was not created by the user', async ({ expect, client, createUser }) => {
+    const [otherUser] = await createUser(client)
+    const [cookie] = await createUser(client)
+    const { slug } = await ProjectFactory.create({ userId: otherUser.id })
+
+    const queryData = {
+      query: FindProjectBySlugQuery,
+      variables: { slug }
     };
 
     const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)

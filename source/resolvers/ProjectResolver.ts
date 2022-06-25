@@ -44,12 +44,18 @@ export class ProjectResolver {
     @Arg('id', () => Int) id: number,
     @Ctx() { user }: ContextType
   ): Promise<Project> {
-    return ProjectRepository
-      .findOne({
-        relations: { user: true },
-        where: { id, userId: user.id }
-      })
+    return ProjectRepository.findOneBy({ id, userId: user.id })
   }
+
+  @UseMiddleware(Authenticate)
+  @Query(() => Project, { nullable: true })
+  async findProjectBySlug(
+    @Arg('slug') slug: string,
+    @Ctx() { user }: ContextType
+  ): Promise<Project> {
+    return ProjectRepository.findOneBy({ slug, userId: user.id })
+  }
+
 
   @UseMiddleware(Authenticate)
   @UseMiddleware(AllowIf('create-project'))
