@@ -1,9 +1,6 @@
-import { Skeleton, Stack } from "@chakra-ui/react";
+import { Skeleton, SkeletonProps, Stack } from "@chakra-ui/react";
 
-interface ProjectListProps {
-  isLoaded?: boolean;
-  children: any;
-}
+interface ProjectListProps extends SkeletonProps {}
 
 export const ProjectList = ({ isLoaded = false, children }: ProjectListProps) => {
   if (!isLoaded) {
@@ -16,5 +13,5 @@ export const ProjectList = ({ isLoaded = false, children }: ProjectListProps) =>
     );
   }
 
-  return children;
+  return <Stack spacing={0}>{children}</Stack>;
 };
