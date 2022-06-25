@@ -19,8 +19,8 @@ export class Todo {
   @ManyToOne(() => Project, project => project.todos, { onDelete: 'CASCADE' })
   project: Project
 
-  @Field(() => String)
-  @Column()
+  @Field(() => String, { nullable: true })
+  @Column({ nullable: true })
   completedAt: Date;
 
   @Field(() => String)
