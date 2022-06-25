@@ -143,6 +143,18 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
+export type RestoreProjectMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type RestoreProjectMutation = { __typename?: 'Mutation', id?: number | null };
+
+export type AllDeletedProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllDeletedProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+
 export type AllProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
@@ -233,6 +245,26 @@ export const LogoutDocument = gql`
 
 export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
+};
+export const RestoreProjectDocument = gql`
+    mutation RestoreProject($id: Int!) {
+  id: restoreProject(id: $id)
+}
+    `;
+
+export function useRestoreProjectMutation() {
+  return Urql.useMutation<RestoreProjectMutation, RestoreProjectMutationVariables>(RestoreProjectDocument);
+};
+export const AllDeletedProjectsDocument = gql`
+    query AllDeletedProjects {
+  projects: allDeletedProjects {
+    ...ProjectFragment
+  }
+}
+    ${ProjectFragmentFragmentDoc}`;
+
+export function useAllDeletedProjectsQuery(options?: Omit<Urql.UseQueryArgs<AllDeletedProjectsQueryVariables>, 'query'>) {
+  return Urql.useQuery<AllDeletedProjectsQuery>({ query: AllDeletedProjectsDocument, ...options });
 };
 export const AllProjectsDocument = gql`
     query AllProjects {

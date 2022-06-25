@@ -10,6 +10,8 @@ import {
 } from "urql";
 import { API_URL } from './constants';
 import {
+  AllDeletedProjectsDocument,
+  AllDeletedProjectsQuery,
   AllProjectsDocument,
   AllProjectsQuery,
   CreateProjectMutation,
@@ -19,7 +21,9 @@ import {
   CurrentUserQuery,
   DeleteProjectMutation,
   DeleteProjectMutationVariables,
-  LoginWithPasswordMutation
+  LoginWithPasswordMutation,
+  RestoreProjectMutation,
+  RestoreProjectMutationVariables
 } from "./generated/graphql";
 
 export const createUrqlClient = () => createClient({
@@ -60,9 +64,20 @@ export const createUrqlClient = () => createClient({
           },
 
           deleteProject(result: DeleteProjectMutation, args: DeleteProjectMutationVariables, cache, info) {
+            cache.invalidate('Query', 'allDeletedProjects')
+
             cache.updateQuery(
               { query: AllProjectsDocument },
               (data: AllProjectsQuery | null) => ({ projects: (data?.projects || []).filter((project) => project.id !== args.id) })
+            )
+          },
+
+          restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
+            cache.invalidate('Query', 'allProjects')
+
+            cache.updateQuery(
+              { query: AllDeletedProjectsDocument },
+              (data: AllDeletedProjectsQuery | null) => ({ projects: (data?.projects || []).filter((project) => project.id !== args.id) })
             )
           },
         },

@@ -13,5 +13,5 @@ export const ProjectList = ({ isLoaded = false, children }: ProjectListProps) =>
     );
   }
 
-  return <Stack spacing={0}>{children}</Stack>;
+  return <>{children}</>;
 };

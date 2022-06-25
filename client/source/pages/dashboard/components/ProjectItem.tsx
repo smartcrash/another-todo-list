@@ -20,7 +20,7 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
   return (
     <Box
       px={3}
-      mx={-2}
+      mx={-3}
       py={1.5}
       borderRadius={"sm"}
       bg={isHover || isOpen ? "gray.200" : undefined}

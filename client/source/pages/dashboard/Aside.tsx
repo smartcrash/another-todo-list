@@ -1,11 +1,23 @@
-import { Box, Divider, Heading, Show } from "@chakra-ui/react";
-import { useAllProjectsQuery, useCreateProjectMutation, useDeleteProjectMutation } from "../../generated/graphql";
+import { Box, Button, Divider, Heading, Show, Spacer } from "@chakra-ui/react";
+import {
+  useAllDeletedProjectsQuery,
+  useAllProjectsQuery,
+  useCreateProjectMutation,
+  useDeleteProjectMutation,
+  useRestoreProjectMutation,
+} from "../../generated/graphql";
+import { useToggle } from "../../hooks";
 import { ProjectAdder, ProjectItem, ProjectList } from "./components";
 
 export const Aside = () => {
+  const [showDeleted, toggleShowDeleted] = useToggle();
   const [{ data = { projects: [] }, fetching }] = useAllProjectsQuery();
+  const [{ data: deleted = { projects: [] }, fetching: fetchingDeleted }] = useAllDeletedProjectsQuery({
+    pause: !showDeleted,
+  });
   const [, createProject] = useCreateProjectMutation();
   const [, deleteProject] = useDeleteProjectMutation();
+  const [, restoreProject] = useRestoreProjectMutation();
 
   return (
     <Show above={"md"}>
@@ -14,12 +26,12 @@ export const Aside = () => {
         bg={"gray.50"}
         w={"320px"}
         flexShrink={0}
-        px={6}
+        px={8}
         pt={10}
         borderRightWidth={1}
         borderRightColor={"gray.300"}
       >
-        <Heading as="h5" size="sm" color={"gray.600"} pl={3}>
+        <Heading as="h5" size="sm" color={"gray.600"}>
           Projects
         </Heading>
 
@@ -33,9 +45,23 @@ export const Aside = () => {
 
         <Divider h={5} />
 
-        <Box pl={3}>
-          <ProjectAdder onConfirm={(title) => createProject({ title })} />
-        </Box>
+        <ProjectAdder onConfirm={(title) => createProject({ title })} />
+
+        <Divider h={8} />
+
+        <Button colorScheme={"blackAlpha"} variant={"link"} size={"sm"} onClick={toggleShowDeleted}>
+          {showDeleted ? "Hide" : "Show"} deleted
+        </Button>
+
+        <Spacer h={4} />
+
+        <div hidden={!showDeleted}>
+          <ProjectList isLoaded={!fetchingDeleted}>
+            {deleted.projects.map((project) => (
+              <ProjectItem project={project} onRestore={({ id }) => restoreProject({ id })} key={project.id} />
+            ))}
+          </ProjectList>
+        </div>
       </Box>
     </Show>
   );
