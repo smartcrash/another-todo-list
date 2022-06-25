@@ -1,10 +1,11 @@
-import { Box, Divider, Heading, Show, Skeleton, SkeletonText, Stack } from "@chakra-ui/react";
-import { useAllProjectsQuery, useCreateProjectMutation } from "../../generated/graphql";
+import { Box, Divider, Heading, Show } from "@chakra-ui/react";
+import { useAllProjectsQuery, useCreateProjectMutation, useDeleteProjectMutation } from "../../generated/graphql";
 import { ProjectAdder, ProjectItem, ProjectList } from "./components";
 
 export const Aside = () => {
   const [{ data = { projects: [] }, fetching }] = useAllProjectsQuery();
   const [, createProject] = useCreateProjectMutation();
+  const [, deleteProject] = useDeleteProjectMutation();
 
   return (
     <Show above={"md"}>
@@ -26,7 +27,7 @@ export const Aside = () => {
 
         <ProjectList isLoaded={!fetching}>
           {data.projects.map((project) => (
-            <ProjectItem project={project} key={project.id} />
+            <ProjectItem project={project} key={project.id} onDelete={({ id }) => deleteProject({ id })} />
           ))}
         </ProjectList>
 

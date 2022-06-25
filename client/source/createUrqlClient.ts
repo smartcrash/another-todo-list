@@ -17,6 +17,8 @@ import {
   CreateUserMutation,
   CurrentUserDocument,
   CurrentUserQuery,
+  DeleteProjectMutation,
+  DeleteProjectMutationVariables,
   LoginWithPasswordMutation
 } from "./generated/graphql";
 
@@ -55,7 +57,14 @@ export const createUrqlClient = () => createClient({
               // NOTE: Append created project at the end.
               (data: AllProjectsQuery | null) => ({ projects: [...(data?.projects || []), result.project] })
             )
-          }
+          },
+
+          deleteProject(result: DeleteProjectMutation, args: DeleteProjectMutationVariables, cache, info) {
+            cache.updateQuery(
+              { query: AllProjectsDocument },
+              (data: AllProjectsQuery | null) => ({ projects: (data?.projects || []).filter((project) => project.id !== args.id) })
+            )
+          },
         },
       },
     }),

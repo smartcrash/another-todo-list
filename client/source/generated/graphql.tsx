@@ -13,8 +13,6 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
-  DateTime: any;
 };
 
 export type AuthenticationResponse = {
@@ -77,7 +75,7 @@ export type MutationUpdateProjectArgs = {
 export type Project = {
   __typename?: 'Project';
   createdAt: Scalars['String'];
-  deletedAt: Scalars['DateTime'];
+  deletedAt?: Maybe<Scalars['String']>;
   id: Scalars['Float'];
   title: Scalars['String'];
   updatedAt: Scalars['String'];
@@ -105,7 +103,7 @@ export type User = {
   username: Scalars['String'];
 };
 
-export type ProjectFragmentFragment = { __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt: any };
+export type ProjectFragmentFragment = { __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
 export type UserFragmentFragment = { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string };
 
@@ -114,7 +112,7 @@ export type CreateProjectMutationVariables = Exact<{
 }>;
 
 
-export type CreateProjectMutation = { __typename?: 'Mutation', project: { __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt: any } };
+export type CreateProjectMutation = { __typename?: 'Mutation', project: { __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type CreateUserMutationVariables = Exact<{
   password: Scalars['String'];
@@ -124,6 +122,13 @@ export type CreateUserMutationVariables = Exact<{
 
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'AuthenticationResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string } | null } };
+
+export type DeleteProjectMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type DeleteProjectMutation = { __typename?: 'Mutation', id?: number | null };
 
 export type LoginWithPasswordMutationVariables = Exact<{
   password: Scalars['String'];
@@ -141,7 +146,7 @@ export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 export type AllProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt: any }> };
+export type AllProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -193,6 +198,15 @@ export const CreateUserDocument = gql`
 
 export function useCreateUserMutation() {
   return Urql.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument);
+};
+export const DeleteProjectDocument = gql`
+    mutation DeleteProject($id: Int!) {
+  id: deleteProject(id: $id)
+}
+    `;
+
+export function useDeleteProjectMutation() {
+  return Urql.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument);
 };
 export const LoginWithPasswordDocument = gql`
     mutation LoginWithPassword($password: String!, $email: String!) {
