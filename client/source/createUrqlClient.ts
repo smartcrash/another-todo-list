@@ -28,6 +28,8 @@ import {
   LoginWithPasswordMutation,
   Project,
   ProjectFragmentFragmentDoc,
+  RemoveTodoMutation,
+  RemoveTodoMutationVariables,
   RestoreProjectMutation,
   RestoreProjectMutationVariables
 } from "./generated/graphql";
@@ -111,6 +113,10 @@ export const createUrqlClient = () => createClient({
                 return data
               }
             )
+          },
+
+          removeTodo(result: RemoveTodoMutation, args: RemoveTodoMutationVariables, cache, info) {
+            cache.invalidate({ __typename: 'Todo', id: args.id })
           }
         },
       },

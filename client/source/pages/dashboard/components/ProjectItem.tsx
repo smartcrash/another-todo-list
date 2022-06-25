@@ -31,13 +31,14 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
         px={3}
         mx={-3}
         py={1.5}
+        pr={12}
         borderRadius={"sm"}
         bg={isHover || isOpen ? "gray.200" : undefined}
         position={"relative"}
         ref={hoverRef}
         data-testid={`project-item`}
       >
-        <Text>{title}</Text>
+        <Text noOfLines={1}>{title}</Text>
 
         <Box
           hidden={!isHover && !isOpen}

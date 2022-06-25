@@ -192,6 +192,13 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
+export type RemoveTodoMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type RemoveTodoMutation = { __typename?: 'Mutation', id: number };
+
 export type RestoreProjectMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -340,6 +347,15 @@ export const LogoutDocument = gql`
 
 export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
+};
+export const RemoveTodoDocument = gql`
+    mutation RemoveTodo($id: Int!) {
+  id: removeTodo(id: $id)
+}
+    `;
+
+export function useRemoveTodoMutation() {
+  return Urql.useMutation<RemoveTodoMutation, RemoveTodoMutationVariables>(RemoveTodoDocument);
 };
 export const RestoreProjectDocument = gql`
     mutation RestoreProject($id: Int!) {

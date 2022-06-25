@@ -5,6 +5,7 @@ import { Container, NonEmptyEditable } from "../../components";
 import {
   useAddTodoMutation,
   useFindProjectBySlugQuery,
+  useRemoveTodoMutation,
   useUpdateProjectMutation,
   useUpdateTodoMutation,
 } from "../../generated/graphql";
@@ -17,6 +18,7 @@ export const Project = () => {
   const [, updateProject] = useUpdateProjectMutation();
   const [, addTodo] = useAddTodoMutation();
   const [, updateTodo] = useUpdateTodoMutation();
+  const [, removeTodo] = useRemoveTodoMutation();
 
   if (fetching) return <>Loading</>; // TODO: Add skeleton
   if (!data && error) return <>Something went wrong: {error.message}</>;
@@ -60,7 +62,12 @@ export const Project = () => {
 
         <TodoList>
           {todos.map((todo) => (
-            <TodoItem todo={todo} onUpdate={(updatedTodo) => updateTodo(updatedTodo)} key={todo.id} />
+            <TodoItem
+              todo={todo}
+              onUpdate={(updatedTodo) => updateTodo(updatedTodo)}
+              onDelete={({ id }) => removeTodo({ id })}
+              key={todo.id}
+            />
           ))}
         </TodoList>
 
