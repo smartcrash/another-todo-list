@@ -96,6 +96,10 @@ describe('Project CRUD', () => {
 
       // The pathname should have changed
       cy.location('pathname').should('contain', slugify(newTitle))
+
+      // The project item on the sidebar should update too
+      cy.getByTestId('project-list').should('not.contain.text', currentProject)
+      cy.getByTestId('project-list').should('contain.text', newTitle)
     })
   })
 })
