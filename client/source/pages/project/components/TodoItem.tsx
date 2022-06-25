@@ -1,4 +1,5 @@
-import { Box, Checkbox, HStack, Text } from "@chakra-ui/react";
+import { Box, Checkbox, EditableInput, EditablePreview, HStack, Text } from "@chakra-ui/react";
+import { NonEmptyEditable } from "../../../components";
 import { Todo } from "../../../generated/graphql";
 
 interface TodoItemProps {
@@ -19,10 +20,16 @@ export const TodoItem = ({ todo, onUpdate }: TodoItemProps) => {
           borderColor={"gray.600"}
         />
 
-        <Box>
-          <Text fontSize={"sm"} textDecor={completed ? "line-through" : undefined}>
-            {content}
-          </Text>
+        <Box flexGrow={1}>
+          <NonEmptyEditable
+            defaultValue={content}
+            onSubmit={(content) => onUpdate({ ...todo, content })}
+            fontSize={"sm"}
+            textDecor={completed ? "line-through" : undefined}
+          >
+            <EditablePreview />
+            <EditableInput />
+          </NonEmptyEditable>
         </Box>
       </HStack>
     </Box>
