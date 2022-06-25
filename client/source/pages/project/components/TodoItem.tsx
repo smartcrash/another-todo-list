@@ -31,7 +31,7 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
   const { content, completed } = todo;
 
   return (
-    <Box py={1} position={"relative"} ref={hoverRef} pr={12}>
+    <Box py={1} position={"relative"} ref={hoverRef} pr={12} data-testid={"todo-item"}>
       <HStack alignItems={"flex-start"} spacing={3}>
         <Checkbox
           mt={1}

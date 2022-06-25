@@ -4,7 +4,7 @@ interface ProjectListProps extends StackProps {}
 
 export const TodoList = ({ children, ...stackProps }: ProjectListProps) => {
   return (
-    <Stack divider={<Divider borderColor={"gray.300"} />} {...stackProps}>
+    <Stack divider={<Divider borderColor={"gray.300"} />} data-testid={"todo-list"} {...stackProps}>
       {children}
     </Stack>
   );
