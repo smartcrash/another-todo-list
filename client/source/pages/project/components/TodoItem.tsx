@@ -9,8 +9,12 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
+  Show,
+  Text,
+  Tooltip,
   useDisclosure,
 } from "@chakra-ui/react";
+import { format } from "date-fns";
 import { useRef } from "react";
 import { NonEmptyEditable } from "../../../components";
 import { Todo } from "../../../generated/graphql";
@@ -29,49 +33,80 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const { content, completed } = todo;
+  const completedAt = todo.completedAt ? new Date(parseInt(todo.completedAt)) : undefined;
+  const formatedCompletedAt = completedAt && format(completedAt, "MMM d p");
 
   return (
-    <Box py={1} position={"relative"} ref={hoverRef} pr={12} data-testid={"todo-item"}>
-      <HStack alignItems={"flex-start"} spacing={3}>
-        <Checkbox
-          mt={1}
-          defaultChecked={completed}
-          colorScheme={"primary"}
-          onChange={(event) => onUpdate({ ...todo, completed: event.target.checked })}
-          size={"lg"}
-          borderColor={"gray.600"}
-        />
-
-        <Box flexGrow={1}>
-          <NonEmptyEditable
-            defaultValue={content}
-            onSubmit={(content) => onUpdate({ ...todo, content })}
-            fontSize={"sm"}
-          >
-            <EditablePreview textDecor={completed ? "line-through" : undefined} />
-            <EditableInput />
-          </NonEmptyEditable>
-        </Box>
-      </HStack>
-
-      <Box hidden={!isHover && !isOpen} position={"absolute"} top={"2px"} right={0}>
-        <Menu isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
-          <MenuButton
-            as={IconButton}
-            size={"sm"}
-            colorScheme={"blackAlpha"}
-            variant={"ghost"}
-            aria-label={"More task actions"}
-            title={"More task actions"}
-            icon={<DotsHorizontalIcon fontSize={"lg"} />}
+    <Tooltip
+      label={`Completed on: ${formatedCompletedAt}`}
+      isDisabled={!completed}
+      hasArrow
+      bg={"white"}
+      color={"gray.900"}
+      placement={"auto-start"}
+    >
+      <Box
+        py={2}
+        position={"relative"}
+        ref={hoverRef}
+        pr={12}
+        data-testid={"todo-item"}
+        bg={isHover || isOpen ? "gray.100" : undefined}
+      >
+        <HStack alignItems={"flex-start"} spacing={3}>
+          <Checkbox
+            mt={1}
+            defaultChecked={completed}
+            colorScheme={"primary"}
+            onChange={(event) => onUpdate({ ...todo, completed: event.target.checked })}
+            size={"lg"}
+            borderColor={"gray.600"}
           />
-          <MenuList>
-            <MenuItem onClick={() => onDelete(todo)} icon={<TrashIcon />} data-testid={"delete-todo"}>
-              Delete task
-            </MenuItem>
-          </MenuList>
-        </Menu>
+
+          <Box flexGrow={1}>
+            <NonEmptyEditable
+              defaultValue={content}
+              onSubmit={(content) => onUpdate({ ...todo, content })}
+              fontSize={"sm"}
+            >
+              <EditablePreview textDecor={completed ? "line-through" : undefined} cursor={"default"} />
+              <EditableInput />
+            </NonEmptyEditable>
+
+            {/* NOTE: Only show this on mobile devices */}
+            <Show below={"sm"}>
+              <Text fontSize={"xs"} color={"gray.500"} hidden={!completed}>
+                Completed on: {formatedCompletedAt}
+              </Text>
+            </Show>
+          </Box>
+        </HStack>
+
+        <Box
+          hidden={!isHover && !isOpen}
+          position={"absolute"}
+          top={"6px"}
+          right={2}
+          onClick={(event) => event.preventDefault()}
+        >
+          <Menu isOpen={isOpen} onOpen={onOpen} onClose={onClose}>
+            <MenuButton
+              as={IconButton}
+              size={"sm"}
+              colorScheme={"blackAlpha"}
+              variant={"ghost"}
+              aria-label={"More task actions"}
+              title={"More task actions"}
+              icon={<DotsHorizontalIcon fontSize={"lg"} />}
+            />
+            <MenuList>
+              <MenuItem onClick={() => onDelete(todo)} icon={<TrashIcon />} data-testid={"delete-todo"}>
+                Delete task
+              </MenuItem>
+            </MenuList>
+          </Menu>
+        </Box>
       </Box>
-    </Box>
+    </Tooltip>
   );
 };
