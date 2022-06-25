@@ -1,0 +1,7 @@
+fragment ProjectFragment on Project {
+  id
+  title
+  createdAt
+  updatedAt
+  deletedAt
+}

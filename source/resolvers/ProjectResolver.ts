@@ -14,7 +14,10 @@ export class ProjectResolver {
   async allProjects(
     @Ctx() { user }: ContextType
   ): Promise<Project[]> {
-    const projects = await ProjectRepository.findBy({ userId: user.id })
+    const projects = await ProjectRepository.find({
+      where: { userId: user.id },
+      order: { createdAt: 'DESC' }
+    })
 
     return projects
   }

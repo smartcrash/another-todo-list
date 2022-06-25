@@ -10,6 +10,10 @@ import {
 } from "urql";
 import { API_URL } from './constants';
 import {
+  AllProjectsDocument,
+  AllProjectsQuery,
+  CreateProjectMutation,
+  CreateProjectMutationVariables,
   CreateUserMutation,
   CurrentUserDocument,
   CurrentUserQuery,
@@ -44,6 +48,14 @@ export const createUrqlClient = () => createClient({
               () => ({ currentUser: null })
             )
           },
+
+          createProject(result: CreateProjectMutation, args: CreateProjectMutationVariables, cache, info) {
+            cache.updateQuery(
+              { query: AllProjectsDocument },
+              // NOTE: Append created project at the end.
+              (data: AllProjectsQuery | null) => ({ projects: [...(data?.projects || []), result.project] })
+            )
+          }
         },
       },
     }),
