@@ -1,9 +1,11 @@
 
 import { MiddlewareFn } from "type-graphql";
 import { dataSource } from "../dataSource";
+import { ProjectdPolicy } from "../policies";
 import { ContextType } from '../types';
 
 const policies = {
+  'project': ProjectdPolicy
 } as const
 
 // TODO: Separate gateKey into to arguments for type safety
