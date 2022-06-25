@@ -27,7 +27,7 @@ export class Project {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Field()
+  @Field(() => String, { nullable: true })
   @DeleteDateColumn()
   deletedAt: Date
 }
