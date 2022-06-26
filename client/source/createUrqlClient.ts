@@ -78,6 +78,7 @@ export const createUrqlClient = () => createClient({
           restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
             cache.invalidate({ __typename: 'Project', id: args.id })
             cache.invalidate('Query', 'allProjects')
+            cache.invalidate('Query', 'findProjectById', { id: args.id })
           },
 
           addTodo(result: AddTodoMutation, args: AddTodoMutationVariables, cache, info) {
