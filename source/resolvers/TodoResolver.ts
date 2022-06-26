@@ -1,4 +1,5 @@
 import { Arg, FieldResolver, Int, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { IsNull } from "typeorm";
 import { Todo } from "../entity";
 import { AllowIf } from "../middlewares/AllowIf";
 import { Authenticate } from "../middlewares/Authenticate";
@@ -38,11 +39,12 @@ export class TodoResolver {
   ): Promise<Todo> {
     const todo = await TodoRepository.findOneBy({ id })
 
-    todo.content = content && content.length ? content : todo.content
-    if (completed) todo.completedAt = todo.completedAt ?? new Date()
-    if (!completed) todo.completedAt = null
+    if (!todo.completedAt) {
+      if (content?.length) todo.content = content
+      if (completed === true) todo.completedAt = new Date()
 
-    await TodoRepository.save(todo)
+      await TodoRepository.save(todo)
+    }
 
     return todo
   }
@@ -51,7 +53,7 @@ export class TodoResolver {
   @UseMiddleware(AllowIf('delete-todo'))
   @Mutation(() => Int)
   async removeTodo(@Arg('id', () => Int) id: number): Promise<number> {
-    await TodoRepository.delete({ id })
+    await TodoRepository.delete({ id, completedAt: IsNull() })
 
     return id
   }

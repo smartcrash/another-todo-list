@@ -172,16 +172,18 @@ test.group('updateTodo', () => {
     expect(todo.completedAt.toDateString()).toBe(new Date().toDateString())
   })
 
-  test('setting `completed` property to `false` set `completedAt` to `null`', async ({ expect, client, createUser }) => {
+  test('a task that was defined as finished should not be edited', async ({ expect, client, createUser }) => {
     const [user, cookie] = await createUser(client)
     const project = await ProjectFactory.create({ user })
-    const { id, completedAt } = await TodoFactory.create({ project, completedAt: new Date() })
+    const { id, content: originalContent, completedAt } = await TodoFactory.create({ project, completedAt: new Date() })
 
     expect(completedAt).toBeTruthy()
 
+    const newContent = faker.lorem.words(3)
+
     const queryData = {
       query: UpdateTodoMutation,
-      variables: { id, completed: false }
+      variables: { id, content: newContent }
     }
 
     const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
@@ -191,11 +193,13 @@ test.group('updateTodo', () => {
     expect(data).toBeTruthy()
 
     expect(data.todo.id).toBe(id)
-    expect(data.todo.completed).toBe(false)
+    expect(data.todo.completed).toBe(true)
+    expect(data.todo.content).toBe(originalContent)
 
     const todo = await TodoRepository.findOneBy({ id })
 
-    expect(todo.completedAt).toBeNull()
+    // Should have not changed
+    expect(todo.content).toBe(originalContent)
   })
 })
 
@@ -246,6 +250,32 @@ test.group('removeTodo', () => {
     // Assert it was not deleted
     const todo = await TodoRepository.findOneBy({ id })
 
+    expect(todo).toBeTruthy()
+  })
+
+  test('a task that was defined as finished should not be removed', async ({ expect, client, createUser }) => {
+    const [user, cookie] = await createUser(client)
+    const project = await ProjectFactory.create({ user })
+    const { id, completedAt } = await TodoFactory.create({ project, completedAt: new Date() })
+
+    expect(completedAt).toBeTruthy()
+
+    const queryData = {
+      query: RemoveTodoMutation,
+      variables: { id }
+    }
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+    const { data, errors } = response.body()
+
+    expect(errors).toBeFalsy()
+    expect(data).toBeTruthy()
+
+    expect(data.id).toBe(id)
+
+    const todo = await TodoRepository.findOneBy({ id })
+
+    // Should exists
     expect(todo).toBeTruthy()
   })
 })
