@@ -5,9 +5,16 @@
 
 > This project has many integration tests, several e2e tests and a few unit tests
 
-<br/>
+I suggest to run your test in a sqlite in memory database, for this you need to create a `.env.test` file with the following:
 
-- To run e2e (with [Cypress](https://www.cypress.io/)) execute:
+```
+DB_CONNECTION=sqlite
+DB_DATABASE=:memory:
+```
+
+And with that you are ready to go and run some tests.
+
+- To run e2e tests (with [Cypress](https://www.cypress.io/)) execute:
 ```bash
 npm run cypress # or cypress:open
 ```
