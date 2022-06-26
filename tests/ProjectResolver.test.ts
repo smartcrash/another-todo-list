@@ -74,6 +74,12 @@ const RestoreProjectMutation = `
   }
 `
 
+const ForceDeleteProjectMutation = `
+  mutation ForceDeleteProject($id: Int!) {
+    id: forceDeleteProject(id: $id)
+  }
+`
+
 test.group('createProject', () => {
   testThrowsIfNotAuthenticated({
     query: CreateProjectMutation,
@@ -346,6 +352,55 @@ test.group('deletProject', () => {
 
     const queryData = {
       query: DeleteProjectMutation,
+      variables: { id }
+    };
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+
+    assertIsForbiddenExeption({ response, expect })
+
+    const project = await ProjectRepository.findOne({ where: { id }, withDeleted: true })
+
+    expect(project).toBeDefined()
+    expect(project.deletedAt).toBeNull()
+  })
+})
+
+test.group('forceDeletProject', () => {
+  testThrowsIfNotAuthenticated({
+    query: ForceDeleteProjectMutation,
+    variables: { id: -1 }
+  })
+
+  test('should delete (for real) the project', async ({ expect, client, createUser }) => {
+    const [user, cookie] = await createUser(client)
+    const { id } = await ProjectFactory.create({ userId: user.id })
+
+    const queryData = {
+      query: ForceDeleteProjectMutation,
+      variables: { id }
+    };
+
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+    const { data } = response.body()
+
+    expect(data.id).toBeDefined()
+    expect(data.id).toBe(id)
+
+    const project = await ProjectRepository.findOne({ where: { id }, withDeleted: true })
+
+    expect(project).toBeFalsy()
+  })
+
+  test('should not be able to delete someone else\'s project', async ({ expect, client, createUser }) => {
+    const [otherUser] = await createUser(client)
+    const [, cookie] = await createUser(client)
+
+    const { id } = await ProjectFactory.create({ userId: otherUser.id })
+
+    const queryData = {
+      query: ForceDeleteProjectMutation,
       variables: { id }
     };
 

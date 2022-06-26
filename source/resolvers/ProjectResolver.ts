@@ -124,4 +124,13 @@ export class ProjectResolver {
 
     return id
   }
+
+  @UseMiddleware(Authenticate)
+  @UseMiddleware(AllowIf('forceDelete-project'))
+  @Mutation(() => Int)
+  async forceDeleteProject(@Arg('id', () => Int) id: number): Promise<number | null> {
+    await ProjectRepository.delete({ id })
+
+    return id
+  }
 }
