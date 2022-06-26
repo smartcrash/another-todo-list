@@ -5,7 +5,6 @@ import { Container, NonEmptyEditable } from "../../components";
 import {
   useAddTodoMutation,
   useFindProjectByIdQuery,
-  useFindProjectBySlugQuery,
   useRemoveTodoMutation,
   useUpdateProjectMutation,
   useUpdateTodoMutation,
@@ -35,11 +34,8 @@ export const Project = () => {
   const onTitleUpdate = async (title: string) => {
     const result = await updateProject({ id, title });
 
+    // Update the URL to show the new project's slug
     if (result.data?.project) {
-      // NOTE: When the project's title is updated it's slug is updated as well.
-      //       If we don't update the page URL, on the next re-render `useFindProjectBySlugQuery`
-      //       will fail to find the project and the component will rediect to '/'
-
       const newSlug = result.data.project.slug;
       const newUrl = route("project", { slug: newSlug });
 
