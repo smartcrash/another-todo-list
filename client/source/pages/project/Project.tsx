@@ -45,7 +45,8 @@ export const Project = () => {
   };
 
   return (
-    <>
+    // NOTE: Add `key` to force re-render so this page is update on re-visits
+    <div key={id}>
       <Helmet title={title} />
 
       <Container maxW={"lg"}>
@@ -97,6 +98,6 @@ export const Project = () => {
 
         <TodoAdder onConfirm={(content) => addTodo({ content, projectId: id })} />
       </Container>
-    </>
+    </div>
   );
 };
