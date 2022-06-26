@@ -30,7 +30,7 @@ export class Project {
   @BeforeUpdate()
   async createSlug() {
     if (this.title) {
-      this.slug = slugify(this.title) + '-' + uniqueId()
+      this.slug = slugify(this.title, { strict: true, }) + '-' + uniqueId()
     }
   }
 
