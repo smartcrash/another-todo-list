@@ -29,13 +29,22 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
+  addTodo?: Maybe<Todo>;
   createProject: Project;
   createUser: AuthenticationResponse;
   deleteProject?: Maybe<Scalars['Int']>;
   loginWithPassword: AuthenticationResponse;
   logout: Scalars['Boolean'];
+  removeTodo: Scalars['Int'];
   restoreProject?: Maybe<Scalars['Int']>;
   updateProject?: Maybe<Project>;
+  updateTodo: Todo;
+};
+
+
+export type MutationAddTodoArgs = {
+  content: Scalars['String'];
+  projectId: Scalars['Int'];
 };
 
 
@@ -62,6 +71,11 @@ export type MutationLoginWithPasswordArgs = {
 };
 
 
+export type MutationRemoveTodoArgs = {
+  id: Scalars['Int'];
+};
+
+
 export type MutationRestoreProjectArgs = {
   id: Scalars['Int'];
 };
@@ -72,6 +86,13 @@ export type MutationUpdateProjectArgs = {
   title?: InputMaybe<Scalars['String']>;
 };
 
+
+export type MutationUpdateTodoArgs = {
+  completed?: InputMaybe<Scalars['Boolean']>;
+  content?: InputMaybe<Scalars['String']>;
+  id: Scalars['Int'];
+};
+
 export type Project = {
   __typename?: 'Project';
   createdAt: Scalars['String'];
@@ -79,6 +100,7 @@ export type Project = {
   id: Scalars['Float'];
   slug: Scalars['String'];
   title: Scalars['String'];
+  todos: Array<Todo>;
   updatedAt: Scalars['String'];
 };
 
@@ -101,6 +123,16 @@ export type QueryFindProjectBySlugArgs = {
   slug: Scalars['String'];
 };
 
+export type Todo = {
+  __typename?: 'Todo';
+  completed: Scalars['Boolean'];
+  completedAt?: Maybe<Scalars['String']>;
+  content: Scalars['String'];
+  createdAt: Scalars['String'];
+  id: Scalars['Float'];
+  updatedAt: Scalars['String'];
+};
+
 export type User = {
   __typename?: 'User';
   createdAt: Scalars['String'];
@@ -112,7 +144,17 @@ export type User = {
 
 export type ProjectFragmentFragment = { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
+export type TodoFragmentFragment = { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string };
+
 export type UserFragmentFragment = { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string };
+
+export type AddTodoMutationVariables = Exact<{
+  projectId: Scalars['Int'];
+  content: Scalars['String'];
+}>;
+
+
+export type AddTodoMutation = { __typename?: 'Mutation', todo?: { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } | null };
 
 export type CreateProjectMutationVariables = Exact<{
   title: Scalars['String'];
@@ -150,6 +192,13 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
+export type RemoveTodoMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type RemoveTodoMutation = { __typename?: 'Mutation', id: number };
+
 export type RestoreProjectMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
@@ -164,6 +213,15 @@ export type UpdateProjectMutationVariables = Exact<{
 
 
 export type UpdateProjectMutation = { __typename?: 'Mutation', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
+
+export type UpdateTodoMutationVariables = Exact<{
+  id: Scalars['Int'];
+  content?: InputMaybe<Scalars['String']>;
+  completed?: InputMaybe<Scalars['Boolean']>;
+}>;
+
+
+export type UpdateTodoMutation = { __typename?: 'Mutation', todo: { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } };
 
 export type AllDeletedProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -185,7 +243,7 @@ export type FindProjectBySlugQueryVariables = Exact<{
 }>;
 
 
-export type FindProjectBySlugQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
+export type FindProjectBySlugQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null, todos: Array<{ __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string }> } | null };
 
 export const ProjectFragmentFragmentDoc = gql`
     fragment ProjectFragment on Project {
@@ -197,6 +255,16 @@ export const ProjectFragmentFragmentDoc = gql`
   deletedAt
 }
     `;
+export const TodoFragmentFragmentDoc = gql`
+    fragment TodoFragment on Todo {
+  id
+  content
+  completed
+  completedAt
+  createdAt
+  updatedAt
+}
+    `;
 export const UserFragmentFragmentDoc = gql`
     fragment UserFragment on User {
   id
@@ -206,6 +274,17 @@ export const UserFragmentFragmentDoc = gql`
   updatedAt
 }
     `;
+export const AddTodoDocument = gql`
+    mutation AddTodo($projectId: Int!, $content: String!) {
+  todo: addTodo(projectId: $projectId, content: $content) {
+    ...TodoFragment
+  }
+}
+    ${TodoFragmentFragmentDoc}`;
+
+export function useAddTodoMutation() {
+  return Urql.useMutation<AddTodoMutation, AddTodoMutationVariables>(AddTodoDocument);
+};
 export const CreateProjectDocument = gql`
     mutation CreateProject($title: String!) {
   project: createProject(title: $title) {
@@ -269,6 +348,15 @@ export const LogoutDocument = gql`
 export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
+export const RemoveTodoDocument = gql`
+    mutation RemoveTodo($id: Int!) {
+  id: removeTodo(id: $id)
+}
+    `;
+
+export function useRemoveTodoMutation() {
+  return Urql.useMutation<RemoveTodoMutation, RemoveTodoMutationVariables>(RemoveTodoDocument);
+};
 export const RestoreProjectDocument = gql`
     mutation RestoreProject($id: Int!) {
   id: restoreProject(id: $id)
@@ -288,6 +376,17 @@ export const UpdateProjectDocument = gql`
 
 export function useUpdateProjectMutation() {
   return Urql.useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UpdateProjectDocument);
+};
+export const UpdateTodoDocument = gql`
+    mutation UpdateTodo($id: Int!, $content: String, $completed: Boolean) {
+  todo: updateTodo(id: $id, content: $content, completed: $completed) {
+    ...TodoFragment
+  }
+}
+    ${TodoFragmentFragmentDoc}`;
+
+export function useUpdateTodoMutation() {
+  return Urql.useMutation<UpdateTodoMutation, UpdateTodoMutationVariables>(UpdateTodoDocument);
 };
 export const AllDeletedProjectsDocument = gql`
     query AllDeletedProjects {
@@ -326,9 +425,13 @@ export const FindProjectBySlugDocument = gql`
     query FindProjectBySlug($slug: String!) {
   project: findProjectBySlug(slug: $slug) {
     ...ProjectFragment
+    todos {
+      ...TodoFragment
+    }
   }
 }
-    ${ProjectFragmentFragmentDoc}`;
+    ${ProjectFragmentFragmentDoc}
+${TodoFragmentFragmentDoc}`;
 
 export function useFindProjectBySlugQuery(options: Omit<Urql.UseQueryArgs<FindProjectBySlugQueryVariables>, 'query'>) {
   return Urql.useQuery<FindProjectBySlugQuery>({ query: FindProjectBySlugDocument, ...options });

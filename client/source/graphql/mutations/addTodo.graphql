@@ -1,0 +1,5 @@
+mutation AddTodo($projectId: Int!, $content: String!) {
+  todo: addTodo(projectId: $projectId, content: $content) {
+    ...TodoFragment
+  }
+}

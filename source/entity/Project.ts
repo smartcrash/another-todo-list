@@ -1,6 +1,8 @@
 import slugify from 'slugify'
 import { Field, ObjectType } from "type-graphql";
-import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { TypeormLoader } from 'type-graphql-dataloader';
+import { BeforeInsert, BeforeUpdate, Column, CreateDateColumn, DeleteDateColumn, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Todo } from './Todo';
 import { User } from "./User";
 
 /**
@@ -37,6 +39,11 @@ export class Project {
 
   @ManyToOne(() => User, user => user.projects, { onDelete: 'CASCADE' })
   user: User
+
+  @Field(() => [Todo])
+  @OneToMany(() => Todo, todo => todo.project)
+  @TypeormLoader()
+  todos: Todo[]
 
   @Field(() => String)
   @CreateDateColumn()

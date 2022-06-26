@@ -6,10 +6,15 @@ import { useHover } from "../../../hooks";
 import { ArchiveIcon, DotsHorizontalIcon, TrashIcon } from "../../../icons";
 import { route } from "../../../routes";
 
-interface ProjectItemProps {
-  project: Project;
-  onDelete?: (project: Project) => void;
-  onRestore?: (project: Project) => void;
+// NOTE: Remove `todo` property from Project type to fix
+//       errors from type mismatch between return values
+//       of `allProject` and `finProjectBySlug`.
+//       `finProjectBySlug` has the `todo` property and `allProject` Query don't
+// FIXME: Find a better way to fix this
+interface ProjectItemProps<P = Omit<Project, "todos">> {
+  project: P;
+  onDelete?: (project: P) => void;
+  onRestore?: (project: P) => void;
 }
 
 export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {} }: ProjectItemProps) => {
@@ -31,13 +36,14 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
         px={3}
         mx={-3}
         py={1.5}
+        pr={12}
         borderRadius={"sm"}
         bg={isHover || isOpen ? "gray.200" : undefined}
         position={"relative"}
         ref={hoverRef}
         data-testid={`project-item`}
       >
-        <Text>{title}</Text>
+        <Text noOfLines={1}>{title}</Text>
 
         <Box
           hidden={!isHover && !isOpen}
