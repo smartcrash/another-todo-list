@@ -34,9 +34,9 @@ export const AdderForm = ({
 
   return (
     <Stack as={"form"} onSubmit={onSubmit} {...props}>
-      <Input type={"text"} ref={inputRef} autoFocus={true} onKeyDown={onKeyDown} {...inputProps} />
+      <Input type={"text"} ref={inputRef} autoFocus={true} onKeyDown={onKeyDown} borderRadius={"md"} {...inputProps} />
 
-      <ButtonGroup size={"sm"} spacing={1}>
+      <ButtonGroup size={"sm"} spacing={1} flexDirection={"row-reverse"}>
         <Button type={"submit"}>{confirmText}</Button>
         <Button colorScheme={"gray"} onClick={onCancel}>
           {cancelText}

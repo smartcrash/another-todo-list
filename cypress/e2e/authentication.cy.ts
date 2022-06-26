@@ -23,14 +23,14 @@ describe('User authentication flow', () => {
 
 
     cy.createUser(username, email, password)
-    cy.location("pathname").should("equal", "/projects");
+    cy.location("pathname").should("equal", "/");
     cy.contains(username)
 
     cy.logout()
     cy.location("pathname").should("equal", "/login");
 
     cy.loginWithPassword(email, password)
-    cy.location("pathname").should("equal", "/projects");
+    cy.location("pathname").should("equal", "/");
     cy.contains(username)
   })
 
@@ -43,7 +43,7 @@ describe('User authentication flow', () => {
     cy.logout()
 
     cy.loginWithPassword(username, password)
-    cy.location("pathname").should("equal", "/projects");
+    cy.location("pathname").should("equal", "/");
   })
 
   it("should display login errors", () => {

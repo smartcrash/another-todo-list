@@ -1,4 +1,3 @@
-export * from './TrashIcon'
 export * from './DotsHorizontalIcon'
-export * from './HeartIcon'
-export * from './HeartEmptyIcon'
+export * from './TrashIcon'
+export * from './ArchiveIcon'

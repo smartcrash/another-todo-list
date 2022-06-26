@@ -1,3 +1,0 @@
-mutation RemoveComment($id: Int!) {
-  id: removeComment(id: $id)
-}

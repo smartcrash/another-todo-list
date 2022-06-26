@@ -1,3 +1,0 @@
-mutation DeleteBoard($id: Int!) {
-  id: deleteBoard(id: $id)
-}

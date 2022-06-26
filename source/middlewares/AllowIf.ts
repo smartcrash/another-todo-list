@@ -1,15 +1,12 @@
 
 import { MiddlewareFn } from "type-graphql";
 import { dataSource } from "../dataSource";
-import { BoardPolicy, CardPolicy, ColumnPolicy, CommentPolicy, TaskPolicy } from "../policies";
+import { ProjectdPolicy, TodoPolicy } from "../policies";
 import { ContextType } from '../types';
 
 const policies = {
-  'board': BoardPolicy,
-  'column': ColumnPolicy,
-  'card': CardPolicy,
-  'task': TaskPolicy,
-  'comment': CommentPolicy,
+  'project': ProjectdPolicy,
+  'todo': TodoPolicy
 } as const
 
 // TODO: Separate gateKey into to arguments for type safety

@@ -1,5 +1,2 @@
-export * from './BoardPolicy'
-export * from './ColumnPolicy'
-export * from './CardPolicy'
-export * from './TaskPolicy'
-export * from './CommentPolicy'
+export * from './ProjectPolicy'
+export * from './TodoPolicy'

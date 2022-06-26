@@ -1,0 +1,5 @@
+query AllDeletedProjects {
+  projects: allDeletedProjects {
+    ...ProjectFragment
+  }
+}

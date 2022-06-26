@@ -1,5 +1,0 @@
-mutation UpdateBoard($id: Int!, $title: String) {
-  board: updateBoard(id: $id, title: $title) {
-    ...BoardFragment
-  }
-}

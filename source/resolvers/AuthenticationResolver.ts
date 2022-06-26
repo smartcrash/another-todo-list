@@ -1,12 +1,9 @@
 import { verify } from 'argon2';
 import { Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver } from "type-graphql";
-import { v4 as uuid } from 'uuid';
 import { z, ZodError } from 'zod';
-import { CORS_ORIGIN, SESSION_COOKIE } from '../constants';
-import { PasswordReset, User } from "../entity";
+import { SESSION_COOKIE } from '../constants';
+import { User } from "../entity";
 import { UserRepository } from '../repository';
-import { PasswordResetRepository } from '../repository/PasswordResetRepository';
-import { sendMail } from '../sendMail';
 import { ContextType } from '../types';
 
 @ObjectType()
@@ -102,64 +99,6 @@ export class AuthenticationResolver {
     }
 
     req.session.userId = user.id
-
-    return { user }
-  }
-
-  @Mutation(() => Boolean)
-  async sendResetPasswordEmail(
-    @Arg('email') email: string,
-  ): Promise<Boolean> {
-    const user = await UserRepository.findOneBy({ email })
-
-    if (!user) return false
-
-    const token = uuid()
-
-    const pwdReset = new PasswordReset()
-    pwdReset.email = user.email
-    pwdReset.token = token
-    await PasswordResetRepository.save(pwdReset)
-
-    await sendMail(user.email, {
-      subject: 'Reset password',
-      html: `
-        <p>Here is your reset password link:</p>
-        <a href="${CORS_ORIGIN}/reset-password/${token}">Resert password</a>
-      `
-    })
-
-    return true
-  }
-
-  @Mutation(() => AuthenticationResponse)
-  async resetPassword(
-    @Arg('token') token: string,
-    @Arg('newPassword') newPassword: string,
-  ): Promise<AuthenticationResponse> {
-    // TODO: Create join to get user
-    const pwdReset = await PasswordResetRepository.findOneBy({ token })
-
-    if (!pwdReset || pwdReset.expired) return {
-      errors: [{
-        field: 'token',
-        message: "Sorry, your token seems to have expired. Please try again."
-      }]
-    }
-
-    const user = await UserRepository.findOneBy({ email: pwdReset.email })
-
-    if (!user) return {
-      errors: [{
-        field: 'token',
-        message: "User no longer exists."
-      }]
-    }
-
-    user.password = newPassword
-
-    await UserRepository.save(user)
-    await PasswordResetRepository.delete({ token })
 
     return { user }
   }

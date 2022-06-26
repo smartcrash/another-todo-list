@@ -1,0 +1,3 @@
+mutation RestoreProject($id: Int!) {
+  id: restoreProject(id: $id)
+}

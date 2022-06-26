@@ -23,10 +23,6 @@ async function createServer() {
     credentials: true,
   }))
 
-  // const RedisStore = connectRedis(session)
-  // const client = createRedisClient({ url: REDIS_URL, legacyMode: true })
-  // await client.connect()
-
   app.use(
     session({
       name: SESSION_COOKIE,
@@ -39,10 +35,7 @@ async function createServer() {
         memory under most conditions, does not scale past a single process,
         and is meant for debugging and developing.
       */
-      // store: new RedisStore({
-      //   client,
-      //   disableTouch: true
-      // }),
+      store: undefined,
       cookie: {
         path: '/',
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years

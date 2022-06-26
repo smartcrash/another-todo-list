@@ -1,10 +1,6 @@
 
-import { gql } from '@urql/core';
 import {
-  Cache,
-  cacheExchange,
-  DataFields,
-  QueryInput
+  cacheExchange
 } from "@urql/exchange-graphcache";
 import {
   createClient,
@@ -14,49 +10,26 @@ import {
 } from "urql";
 import { API_URL } from './constants';
 import {
-  AddCommentMutation,
-  AddCommentMutationVariables,
-  AddTaskMutation,
-  AddTaskMutationVariables,
-  AddToFavoritesMutationVariables,
-  AllBoardsDocument,
-  AllBoardsQuery,
-  AllDeletedBoardsDocument,
-  AllDeletedBoardsQuery,
-  AllFavoritesDocument,
-  AllFavoritesQuery,
-  Board,
-  BoardFragmentFragmentDoc, CreateBoardMutation,
+  AddTodoMutation,
+  AddTodoMutationVariables, AllProjectsDocument,
+  AllProjectsQuery,
+  CreateProjectMutation,
+  CreateProjectMutationVariables,
   CreateUserMutation,
   CurrentUserDocument,
   CurrentUserQuery,
-  DeleteBoardMutation,
-  DeleteBoardMutationVariables, FindCardByIdDocument,
-  FindCardByIdQuery,
+  DeleteProjectMutation,
+  DeleteProjectMutationVariables,
+  FindProjectBySlugDocument,
+  FindProjectBySlugQuery,
   LoginWithPasswordMutation,
-  LogoutMutation,
-  RemoveCardMutationVariables,
-  RemoveColumnMutation,
-  RemoveFromFavoritesMutationVariables,
-  RemoveTaskMutation,
-  RemoveTaskMutationVariables,
-  RestoreBoardMutation,
-  RestoreBoardMutationVariables
+  Project,
+  ProjectFragmentFragmentDoc,
+  RemoveTodoMutation,
+  RemoveTodoMutationVariables,
+  RestoreProjectMutation,
+  RestoreProjectMutationVariables
 } from "./generated/graphql";
-
-function updateQuery<R extends DataFields, Q>(
-  cache: Cache,
-  queryInput: QueryInput,
-  result: any,
-  // The `data` may be null if the cache doesn't actually have
-  // enough locally cached information to fulfil the query
-  fn: (result: R, data: Q | null) => Q | null
-) {
-  return cache.updateQuery(
-    queryInput,
-    (data) => fn(result, data as any) as any
-  );
-}
 
 export const createUrqlClient = () => createClient({
   url: API_URL,
@@ -66,181 +39,72 @@ export const createUrqlClient = () => createClient({
     cacheExchange({
       updates: {
         Mutation: {
-          loginWithPassword: (result, args, cache, info) => {
-            updateQuery<LoginWithPasswordMutation, CurrentUserQuery>(
-              cache,
-              { query: CurrentUserDocument },
-              result,
-              (result, data) => {
-                if (result.loginWithPassword.errors) return data;
-                else return { currentUser: result.loginWithPassword.user };
-              }
-            );
-          },
-
-          createUser: (result, args, cache, info) => {
-            updateQuery<CreateUserMutation, CurrentUserQuery>(
-              cache,
-              { query: CurrentUserDocument },
-              result,
-              (result, data) => {
-                if (result.createUser.errors) return data;
-                else return { currentUser: result.createUser.user };
-              }
-            );
-          },
-
-          logout: (result, args, cache, info) => {
-            updateQuery<LogoutMutation, CurrentUserQuery>(
-              cache,
-              { query: CurrentUserDocument },
-              result,
-              () => ({ currentUser: null })
-            );
-          },
-
-          createBoard: (result, args, cache, info) => {
-            updateQuery<CreateBoardMutation, AllBoardsQuery>(
-              cache,
-              { query: AllBoardsDocument },
-              // NOTE: This works under the assumpsion that the `allBoards` query
-              // returns boards ordered by `createdAt`, this may change in the
-              // future.
-              result, (result, data) => ({ boards: [result.board, ...(data?.boards || [])] })
-            )
-          },
-
-          deleteBoard(result: DeleteBoardMutation, args: DeleteBoardMutationVariables, cache) {
-            // Remove deleted board from cache
-            cache.invalidate('Query', 'findBoardById', { id: args.id })
-
-            // Remove board from allBoardsQuery
-            cache.updateQuery(
-              { query: AllBoardsDocument },
-              (data: AllBoardsQuery | null) => ({ boards: (data?.boards || []).filter((board) => board.id !== args.id) })
-            )
-
-            // Remove board from allFavorites
-            cache.updateQuery(
-              { query: AllFavoritesDocument },
-              (data: AllFavoritesQuery | null) => ({ favorites: (data?.favorites || []).filter((board) => board.id !== args.id) })
-            )
-            // Append board to allDeletedBoards query if is in cache
-            const board = cache.readFragment(BoardFragmentFragmentDoc, { id: args.id }) as Board | null
-
-            if (board) {
-              cache.updateQuery({ query: AllDeletedBoardsDocument }, (data: AllDeletedBoardsQuery | null) => {
-                if (!data) return data
-                data.boards.unshift({ __typename: 'Board', ...board })
-                return data
-              })
-            } else {
-              // If is not in cache, just invalidate the whole list
-              // so is re-fetch again and update the UI
-              cache.invalidate('Query', 'allDeletedBoards')
-            }
-          },
-
-          restoreBoard: (result, args: RestoreBoardMutationVariables, cache, info) => {
-            cache.invalidate('Query', 'allBoards')
-
-            updateQuery<RestoreBoardMutation, AllDeletedBoardsQuery>(
-              cache,
-              { query: AllDeletedBoardsDocument },
-              result, (result, data) => ({ boards: (data?.boards || []).filter((board) => board.id !== args.id) })
-            )
-          },
-
-          addToFavorites: (_, { id }: AddToFavoritesMutationVariables, cache) => {
-            // Update `favorite` field on every Board on cache
-            const fragment = gql`
-              fragment _ on Board {
-                id
-                favorite
-              }
-            `
-            cache.writeFragment(fragment, { id, favorite: true });
-
-            // Add Board to `allFavoritesQuery` cache
-            cache.updateQuery({ query: AllFavoritesDocument }, (data: AllFavoritesQuery | null) => {
-              if (!data || !data.favorites) return data
-
-              const board = cache.readFragment(BoardFragmentFragmentDoc, { id })
-
-              if (!board) return data
-
-              data.favorites.push({
-                __typename: 'Board' as const,
-                ...(board as any)
-              })
-
-              return data
+          loginWithPassword(result: LoginWithPasswordMutation, args, cache, info) {
+            cache.updateQuery({ query: CurrentUserDocument }, (data: CurrentUserQuery | null) => {
+              if (result.loginWithPassword.errors) return data;
+              else return { currentUser: result.loginWithPassword.user };
             })
           },
 
-          removeFromFavorites: (result, args: RemoveFromFavoritesMutationVariables, cache, info) => {
-            const fragment = gql`
-              fragment _ on Board {
-                id
-                favorite
-              }
-            `;
-
-            cache.writeFragment(fragment, { id: args.id, favorite: false });
-
-            cache.updateQuery({ query: AllFavoritesDocument }, (data: AllFavoritesQuery | null) => {
-              if (!data || !data.favorites) return data
-              data.favorites = data.favorites.filter(({ id }) => id !== args.id)
-              return data
+          createUser(result: CreateUserMutation, args, cache, info) {
+            cache.updateQuery({ query: CurrentUserDocument }, (data: CurrentUserQuery | null) => {
+              if (result.createUser.errors) return data;
+              else return { currentUser: result.createUser.user };
             })
           },
 
-          addTask(result: AddTaskMutation, args: AddTaskMutationVariables, cache, info) {
+          logout(result, args, cache, info) {
+            // NOTE: I invalidate every query manually, since there is not a direct or simple
+            //       way to invalidate the whole cache at once.
+            // See: https://github.com/FormidableLabs/urql/issues/297
+
+            cache.invalidate('Query', 'currentUser')
+            cache.invalidate('Query', 'allProjects')
+            cache.invalidate('Query', 'allDeletedProjects')
+          },
+
+          createProject(result: CreateProjectMutation, args: CreateProjectMutationVariables, cache, info) {
+            cache.updateQuery(
+              { query: AllProjectsDocument },
+              // NOTE: Append created project at the end.
+              (data: AllProjectsQuery | null) => ({ projects: [...(data?.projects || []), result.project] })
+            )
+          },
+
+          deleteProject(result: DeleteProjectMutation, args: DeleteProjectMutationVariables, cache, info) {
+            cache.invalidate({ __typename: 'Project', id: args.id })
+            cache.invalidate('Query', 'allDeletedProjects')
+          },
+
+          restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
+            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.id }) as Project | null
+
+            cache.invalidate({ __typename: 'Project', id: args.id })
+            cache.invalidate('Query', 'allProjects')
+            cache.invalidate('Query', 'findProjectBySlug', { slug: project?.slug! })
+          },
+
+          addTodo(result: AddTodoMutation, args: AddTodoMutationVariables, cache, info) {
+            // This query may return `null` or `undefined`
+            if (!result.todo) return
+
+            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.projectId }) as Project | null
+
             cache.updateQuery(
               {
-                query: FindCardByIdDocument,
-                variables: { id: args.cardId }
+                query: FindProjectBySlugDocument,
+                variables: { slug: project?.slug }
               },
-              (data: FindCardByIdQuery | null) => {
-                if (!result.task) return data
-                if (!data || !data.card) return data
-
-                data.card.tasks.push(result.task)
-
+              (data: FindProjectBySlugQuery | null) => {
+                if (!data || !data.project) return data
+                data.project.todos.push(result.todo!)
                 return data
               }
             )
           },
 
-          removeTask(result: RemoveTaskMutation, args: RemoveTaskMutationVariables, cache, info) {
-            cache.invalidate({
-              __typename: 'Task',
-              id: args.id,
-            });
-          },
-
-          addComment(result: AddCommentMutation, args: AddCommentMutationVariables, cache, info) {
-            cache.updateQuery(
-              {
-                query: FindCardByIdDocument,
-                variables: { id: args.cardId }
-              },
-              (data: FindCardByIdQuery | null) => {
-                if (!result.comment) return data
-                if (!data || !data.card) return data
-
-                data.card.comments.push(result.comment)
-
-                return data
-              }
-            )
-          },
-
-          removeComment(result: RemoveColumnMutation, args: RemoveCardMutationVariables, cache, info) {
-            cache.invalidate({
-              __typename: 'Comment',
-              id: args.id,
-            });
+          removeTodo(result: RemoveTodoMutation, args: RemoveTodoMutationVariables, cache, info) {
+            cache.invalidate({ __typename: 'Todo', id: args.id })
           }
         },
       },

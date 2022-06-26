@@ -1,0 +1,8 @@
+fragment TodoFragment on Todo {
+  id
+  content
+  completed
+  completedAt
+  createdAt
+  updatedAt
+}

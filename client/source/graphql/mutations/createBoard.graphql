@@ -1,5 +1,0 @@
-mutation CreateBoard($title: String!) {
-  board: createBoard(title: $title) {
-    ...BoardFragment
-  }
-}

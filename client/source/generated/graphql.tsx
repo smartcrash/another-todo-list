@@ -13,56 +13,12 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
-  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
-  DateTime: any;
 };
 
 export type AuthenticationResponse = {
   __typename?: 'AuthenticationResponse';
   errors?: Maybe<Array<FieldError>>;
   user?: Maybe<User>;
-};
-
-export type Board = {
-  __typename?: 'Board';
-  columns: Array<Column>;
-  createdAt: Scalars['DateTime'];
-  createdBy: User;
-  deletedAt: Scalars['DateTime'];
-  favorite: Scalars['Boolean'];
-  id: Scalars['Float'];
-  title: Scalars['String'];
-  updatedAt: Scalars['DateTime'];
-};
-
-export type Card = {
-  __typename?: 'Card';
-  column: Column;
-  comments: Array<Comment>;
-  description: Scalars['String'];
-  id: Scalars['Float'];
-  index: Scalars['Float'];
-  tasks: Array<Task>;
-  title: Scalars['String'];
-};
-
-export type Column = {
-  __typename?: 'Column';
-  cards: Array<Card>;
-  id: Scalars['Float'];
-  title: Scalars['String'];
-};
-
-export type Comment = {
-  __typename?: 'Comment';
-  canDelete: Scalars['Boolean'];
-  canUpdate: Scalars['Boolean'];
-  card: Card;
-  content: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  id: Scalars['Float'];
-  updatedAt: Scalars['DateTime'];
-  user: User;
 };
 
 export type FieldError = {
@@ -73,64 +29,26 @@ export type FieldError = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  addCard: Card;
-  addColumn: Column;
-  addComment: Comment;
-  addTask?: Maybe<Task>;
-  addToFavorites: Scalars['Boolean'];
-  createBoard: Board;
+  addTodo?: Maybe<Todo>;
+  createProject: Project;
   createUser: AuthenticationResponse;
-  deleteBoard?: Maybe<Scalars['Int']>;
+  deleteProject?: Maybe<Scalars['Int']>;
   loginWithPassword: AuthenticationResponse;
   logout: Scalars['Boolean'];
-  moveCard?: Maybe<Card>;
-  removeCard?: Maybe<Scalars['Int']>;
-  removeColumn?: Maybe<Scalars['Int']>;
-  removeComment: Scalars['Int'];
-  removeFromFavorites: Scalars['Boolean'];
-  removeTask: Scalars['Int'];
-  resetPassword: AuthenticationResponse;
-  restoreBoard?: Maybe<Scalars['Int']>;
-  sendResetPasswordEmail: Scalars['Boolean'];
-  updateBoard?: Maybe<Board>;
-  updateCard?: Maybe<Card>;
-  updateColumn?: Maybe<Column>;
-  updateComment: Comment;
-  updateTask: Task;
+  removeTodo: Scalars['Int'];
+  restoreProject?: Maybe<Scalars['Int']>;
+  updateProject?: Maybe<Project>;
+  updateTodo: Todo;
 };
 
 
-export type MutationAddCardArgs = {
-  columnId: Scalars['Int'];
-  description?: InputMaybe<Scalars['String']>;
-  title: Scalars['String'];
-};
-
-
-export type MutationAddColumnArgs = {
-  boardId: Scalars['Int'];
-  title: Scalars['String'];
-};
-
-
-export type MutationAddCommentArgs = {
-  cardId: Scalars['Int'];
+export type MutationAddTodoArgs = {
   content: Scalars['String'];
+  projectId: Scalars['Int'];
 };
 
 
-export type MutationAddTaskArgs = {
-  cardId: Scalars['Int'];
-  content: Scalars['String'];
-};
-
-
-export type MutationAddToFavoritesArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationCreateBoardArgs = {
+export type MutationCreateProjectArgs = {
   title: Scalars['String'];
 };
 
@@ -142,7 +60,7 @@ export type MutationCreateUserArgs = {
 };
 
 
-export type MutationDeleteBoardArgs = {
+export type MutationDeleteProjectArgs = {
   id: Scalars['Int'];
 };
 
@@ -153,119 +71,70 @@ export type MutationLoginWithPasswordArgs = {
 };
 
 
-export type MutationMoveCardArgs = {
-  id: Scalars['Int'];
-  toColumnId: Scalars['Int'];
-  toIndex: Scalars['Int'];
-};
-
-
-export type MutationRemoveCardArgs = {
+export type MutationRemoveTodoArgs = {
   id: Scalars['Int'];
 };
 
 
-export type MutationRemoveColumnArgs = {
+export type MutationRestoreProjectArgs = {
   id: Scalars['Int'];
 };
 
 
-export type MutationRemoveCommentArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationRemoveFromFavoritesArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationRemoveTaskArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationResetPasswordArgs = {
-  newPassword: Scalars['String'];
-  token: Scalars['String'];
-};
-
-
-export type MutationRestoreBoardArgs = {
-  id: Scalars['Int'];
-};
-
-
-export type MutationSendResetPasswordEmailArgs = {
-  email: Scalars['String'];
-};
-
-
-export type MutationUpdateBoardArgs = {
+export type MutationUpdateProjectArgs = {
   id: Scalars['Int'];
   title?: InputMaybe<Scalars['String']>;
 };
 
 
-export type MutationUpdateCardArgs = {
-  description?: InputMaybe<Scalars['String']>;
-  id: Scalars['Int'];
-  title?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationUpdateColumnArgs = {
-  id: Scalars['Int'];
-  title?: InputMaybe<Scalars['String']>;
-};
-
-
-export type MutationUpdateCommentArgs = {
-  content?: InputMaybe<Scalars['String']>;
-  id: Scalars['Int'];
-};
-
-
-export type MutationUpdateTaskArgs = {
+export type MutationUpdateTodoArgs = {
   completed?: InputMaybe<Scalars['Boolean']>;
   content?: InputMaybe<Scalars['String']>;
   id: Scalars['Int'];
 };
 
+export type Project = {
+  __typename?: 'Project';
+  createdAt: Scalars['String'];
+  deletedAt?: Maybe<Scalars['String']>;
+  id: Scalars['Float'];
+  slug: Scalars['String'];
+  title: Scalars['String'];
+  todos: Array<Todo>;
+  updatedAt: Scalars['String'];
+};
+
 export type Query = {
   __typename?: 'Query';
-  allBoards: Array<Board>;
-  allDeletedBoards: Array<Board>;
-  allFavorites: Array<Board>;
+  allDeletedProjects: Array<Project>;
+  allProjects: Array<Project>;
   currentUser?: Maybe<User>;
-  findBoardById?: Maybe<Board>;
-  findCardById?: Maybe<Card>;
+  findProjectById?: Maybe<Project>;
+  findProjectBySlug?: Maybe<Project>;
 };
 
 
-export type QueryFindBoardByIdArgs = {
+export type QueryFindProjectByIdArgs = {
   id: Scalars['Int'];
 };
 
 
-export type QueryFindCardByIdArgs = {
-  id: Scalars['Int'];
+export type QueryFindProjectBySlugArgs = {
+  slug: Scalars['String'];
 };
 
-export type Task = {
-  __typename?: 'Task';
-  card: Card;
+export type Todo = {
+  __typename?: 'Todo';
   completed: Scalars['Boolean'];
+  completedAt?: Maybe<Scalars['String']>;
   content: Scalars['String'];
-  createdAt: Scalars['DateTime'];
-  createdBy: User;
+  createdAt: Scalars['String'];
   id: Scalars['Float'];
-  updatedAt: Scalars['DateTime'];
+  updatedAt: Scalars['String'];
 };
 
 export type User = {
   __typename?: 'User';
-  boards: Array<Board>;
   createdAt: Scalars['String'];
   email: Scalars['String'];
   id: Scalars['Float'];
@@ -273,69 +142,26 @@ export type User = {
   username: Scalars['String'];
 };
 
-export type BoardFragmentFragment = { __typename?: 'Board', id: number, title: string, createdAt: any, updatedAt: any, favorite: boolean };
+export type ProjectFragmentFragment = { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null };
 
-export type CardFragmentFragment = { __typename?: 'Card', id: number, title: string, description: string, index: number };
-
-export type ColumnFragmentFragment = { __typename?: 'Column', id: number, title: string, cards: Array<{ __typename?: 'Card', id: number, title: string, description: string, index: number }> };
-
-export type CommentFragmentFragment = { __typename?: 'Comment', id: number, content: string, canUpdate: boolean, canDelete: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: number, username: string } };
-
-export type TaskFragmentFragment = { __typename?: 'Task', id: number, content: string, completed: boolean };
+export type TodoFragmentFragment = { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string };
 
 export type UserFragmentFragment = { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string };
 
-export type AddCardMutationVariables = Exact<{
-  title: Scalars['String'];
-  description?: InputMaybe<Scalars['String']>;
-  columnId: Scalars['Int'];
-}>;
-
-
-export type AddCardMutation = { __typename?: 'Mutation', card: { __typename?: 'Card', id: number, title: string, description: string, index: number } };
-
-export type AddColumnMutationVariables = Exact<{
-  boardId: Scalars['Int'];
-  title: Scalars['String'];
-}>;
-
-
-export type AddColumnMutation = { __typename?: 'Mutation', column: { __typename?: 'Column', id: number, title: string, cards: Array<{ __typename?: 'Card', id: number, title: string, description: string, index: number }> } };
-
-export type AddCommentMutationVariables = Exact<{
-  cardId: Scalars['Int'];
+export type AddTodoMutationVariables = Exact<{
+  projectId: Scalars['Int'];
   content: Scalars['String'];
 }>;
 
 
-export type AddCommentMutation = { __typename?: 'Mutation', comment: { __typename?: 'Comment', id: number, content: string, canUpdate: boolean, canDelete: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: number, username: string } } };
+export type AddTodoMutation = { __typename?: 'Mutation', todo?: { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } | null };
 
-export type AddTaskMutationVariables = Exact<{
-  cardId: Scalars['Int'];
-  content: Scalars['String'];
-}>;
-
-
-export type AddTaskMutation = { __typename?: 'Mutation', task?: { __typename?: 'Task', id: number, content: string, completed: boolean } | null };
-
-export type AddToFavoritesMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type AddToFavoritesMutation = { __typename?: 'Mutation', addToFavorites: boolean };
-
-export type AllFavoritesQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllFavoritesQuery = { __typename?: 'Query', favorites: Array<{ __typename?: 'Board', id: number, title: string, createdAt: any, updatedAt: any, favorite: boolean }> };
-
-export type CreateBoardMutationVariables = Exact<{
+export type CreateProjectMutationVariables = Exact<{
   title: Scalars['String'];
 }>;
 
 
-export type CreateBoardMutation = { __typename?: 'Mutation', board: { __typename?: 'Board', id: number, title: string, createdAt: any, updatedAt: any, favorite: boolean } };
+export type CreateProjectMutation = { __typename?: 'Mutation', project: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } };
 
 export type CreateUserMutationVariables = Exact<{
   password: Scalars['String'];
@@ -346,12 +172,12 @@ export type CreateUserMutationVariables = Exact<{
 
 export type CreateUserMutation = { __typename?: 'Mutation', createUser: { __typename?: 'AuthenticationResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string } | null } };
 
-export type DeleteBoardMutationVariables = Exact<{
+export type DeleteProjectMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type DeleteBoardMutation = { __typename?: 'Mutation', id?: number | null };
+export type DeleteProjectMutation = { __typename?: 'Mutation', id?: number | null };
 
 export type LoginWithPasswordMutationVariables = Exact<{
   password: Scalars['String'];
@@ -366,188 +192,77 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
-export type MoveCardMutationVariables = Exact<{
-  toIndex: Scalars['Int'];
-  toColumnId: Scalars['Int'];
+export type RemoveTodoMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type MoveCardMutation = { __typename?: 'Mutation', card?: { __typename?: 'Card', id: number } | null };
+export type RemoveTodoMutation = { __typename?: 'Mutation', id: number };
 
-export type RemoveCardMutationVariables = Exact<{
+export type RestoreProjectMutationVariables = Exact<{
   id: Scalars['Int'];
 }>;
 
 
-export type RemoveCardMutation = { __typename?: 'Mutation', id?: number | null };
+export type RestoreProjectMutation = { __typename?: 'Mutation', id?: number | null };
 
-export type RemoveColumnMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type RemoveColumnMutation = { __typename?: 'Mutation', id?: number | null };
-
-export type RemoveCommentMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type RemoveCommentMutation = { __typename?: 'Mutation', id: number };
-
-export type RemoveFromFavoritesMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type RemoveFromFavoritesMutation = { __typename?: 'Mutation', removeFromFavorites: boolean };
-
-export type RemoveTaskMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type RemoveTaskMutation = { __typename?: 'Mutation', id: number };
-
-export type ResetPasswordMutationVariables = Exact<{
-  newPassword: Scalars['String'];
-  token: Scalars['String'];
-}>;
-
-
-export type ResetPasswordMutation = { __typename?: 'Mutation', resetPassword: { __typename?: 'AuthenticationResponse', errors?: Array<{ __typename?: 'FieldError', field: string, message: string }> | null, user?: { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string } | null } };
-
-export type RestoreBoardMutationVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type RestoreBoardMutation = { __typename?: 'Mutation', id?: number | null };
-
-export type SendResetPasswordEmailMutationVariables = Exact<{
-  email: Scalars['String'];
-}>;
-
-
-export type SendResetPasswordEmailMutation = { __typename?: 'Mutation', sendResetPasswordEmail: boolean };
-
-export type UpdateBoardMutationVariables = Exact<{
+export type UpdateProjectMutationVariables = Exact<{
   id: Scalars['Int'];
   title?: InputMaybe<Scalars['String']>;
 }>;
 
 
-export type UpdateBoardMutation = { __typename?: 'Mutation', board?: { __typename?: 'Board', id: number, title: string, createdAt: any, updatedAt: any, favorite: boolean } | null };
+export type UpdateProjectMutation = { __typename?: 'Mutation', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null } | null };
 
-export type UpdateCardMutationVariables = Exact<{
-  id: Scalars['Int'];
-  description?: InputMaybe<Scalars['String']>;
-  title?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type UpdateCardMutation = { __typename?: 'Mutation', updateCard?: { __typename?: 'Card', id: number, title: string, description: string, index: number } | null };
-
-export type UpdateColumnMutationVariables = Exact<{
-  id: Scalars['Int'];
-  title?: InputMaybe<Scalars['String']>;
-}>;
-
-
-export type UpdateColumnMutation = { __typename?: 'Mutation', column?: { __typename?: 'Column', id: number, title: string, cards: Array<{ __typename?: 'Card', id: number, title: string, description: string, index: number }> } | null };
-
-export type UpdateCommentMutationVariables = Exact<{
-  content: Scalars['String'];
-  id: Scalars['Int'];
-}>;
-
-
-export type UpdateCommentMutation = { __typename?: 'Mutation', comment: { __typename?: 'Comment', id: number, content: string, canUpdate: boolean, canDelete: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: number, username: string } } };
-
-export type UpdateTaskMutationVariables = Exact<{
+export type UpdateTodoMutationVariables = Exact<{
   id: Scalars['Int'];
   content?: InputMaybe<Scalars['String']>;
   completed?: InputMaybe<Scalars['Boolean']>;
 }>;
 
 
-export type UpdateTaskMutation = { __typename?: 'Mutation', task: { __typename?: 'Task', id: number, content: string, completed: boolean } };
+export type UpdateTodoMutation = { __typename?: 'Mutation', todo: { __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string } };
 
-export type AllBoardsQueryVariables = Exact<{ [key: string]: never; }>;
-
-
-export type AllBoardsQuery = { __typename?: 'Query', boards: Array<{ __typename?: 'Board', id: number, title: string, createdAt: any, updatedAt: any, favorite: boolean }> };
-
-export type AllDeletedBoardsQueryVariables = Exact<{ [key: string]: never; }>;
+export type AllDeletedProjectsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type AllDeletedBoardsQuery = { __typename?: 'Query', boards: Array<{ __typename?: 'Board', id: number, title: string, createdAt: any, updatedAt: any, favorite: boolean }> };
+export type AllDeletedProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
+
+export type AllProjectsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type AllProjectsQuery = { __typename?: 'Query', projects: Array<{ __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null }> };
 
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string } | null };
 
-export type FindBoardByIdQueryVariables = Exact<{
-  id: Scalars['Int'];
+export type FindProjectBySlugQueryVariables = Exact<{
+  slug: Scalars['String'];
 }>;
 
 
-export type FindBoardByIdQuery = { __typename?: 'Query', board?: { __typename?: 'Board', id: number, title: string, favorite: boolean, createdAt: any, updatedAt: any, createdBy: { __typename?: 'User', id: number, username: string }, columns: Array<{ __typename?: 'Column', id: number, title: string, cards: Array<{ __typename?: 'Card', id: number, title: string, description: string, index: number }> }> } | null };
+export type FindProjectBySlugQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null, todos: Array<{ __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string }> } | null };
 
-export type FindCardByIdQueryVariables = Exact<{
-  id: Scalars['Int'];
-}>;
-
-
-export type FindCardByIdQuery = { __typename?: 'Query', card?: { __typename?: 'Card', id: number, title: string, description: string, column: { __typename?: 'Column', id: number, title: string }, tasks: Array<{ __typename?: 'Task', id: number, content: string, completed: boolean }>, comments: Array<{ __typename?: 'Comment', id: number, content: string, canUpdate: boolean, canDelete: boolean, createdAt: any, updatedAt: any, user: { __typename?: 'User', id: number, username: string } }> } | null };
-
-export const BoardFragmentFragmentDoc = gql`
-    fragment BoardFragment on Board {
+export const ProjectFragmentFragmentDoc = gql`
+    fragment ProjectFragment on Project {
   id
   title
+  slug
   createdAt
   updatedAt
-  favorite
+  deletedAt
 }
     `;
-export const CardFragmentFragmentDoc = gql`
-    fragment CardFragment on Card {
-  id
-  title
-  description
-  index
-}
-    `;
-export const ColumnFragmentFragmentDoc = gql`
-    fragment ColumnFragment on Column {
-  id
-  title
-  cards {
-    ...CardFragment
-  }
-}
-    ${CardFragmentFragmentDoc}`;
-export const CommentFragmentFragmentDoc = gql`
-    fragment CommentFragment on Comment {
-  id
-  content
-  user {
-    id
-    username
-  }
-  canUpdate
-  canDelete
-  createdAt
-  updatedAt
-}
-    `;
-export const TaskFragmentFragmentDoc = gql`
-    fragment TaskFragment on Task {
+export const TodoFragmentFragmentDoc = gql`
+    fragment TodoFragment on Todo {
   id
   content
   completed
+  completedAt
+  createdAt
+  updatedAt
 }
     `;
 export const UserFragmentFragmentDoc = gql`
@@ -559,80 +274,27 @@ export const UserFragmentFragmentDoc = gql`
   updatedAt
 }
     `;
-export const AddCardDocument = gql`
-    mutation AddCard($title: String!, $description: String, $columnId: Int!) {
-  card: addCard(title: $title, description: $description, columnId: $columnId) {
-    ...CardFragment
+export const AddTodoDocument = gql`
+    mutation AddTodo($projectId: Int!, $content: String!) {
+  todo: addTodo(projectId: $projectId, content: $content) {
+    ...TodoFragment
   }
 }
-    ${CardFragmentFragmentDoc}`;
+    ${TodoFragmentFragmentDoc}`;
 
-export function useAddCardMutation() {
-  return Urql.useMutation<AddCardMutation, AddCardMutationVariables>(AddCardDocument);
+export function useAddTodoMutation() {
+  return Urql.useMutation<AddTodoMutation, AddTodoMutationVariables>(AddTodoDocument);
 };
-export const AddColumnDocument = gql`
-    mutation AddColumn($boardId: Int!, $title: String!) {
-  column: addColumn(boardId: $boardId, title: $title) {
-    ...ColumnFragment
+export const CreateProjectDocument = gql`
+    mutation CreateProject($title: String!) {
+  project: createProject(title: $title) {
+    ...ProjectFragment
   }
 }
-    ${ColumnFragmentFragmentDoc}`;
+    ${ProjectFragmentFragmentDoc}`;
 
-export function useAddColumnMutation() {
-  return Urql.useMutation<AddColumnMutation, AddColumnMutationVariables>(AddColumnDocument);
-};
-export const AddCommentDocument = gql`
-    mutation AddComment($cardId: Int!, $content: String!) {
-  comment: addComment(cardId: $cardId, content: $content) {
-    ...CommentFragment
-  }
-}
-    ${CommentFragmentFragmentDoc}`;
-
-export function useAddCommentMutation() {
-  return Urql.useMutation<AddCommentMutation, AddCommentMutationVariables>(AddCommentDocument);
-};
-export const AddTaskDocument = gql`
-    mutation AddTask($cardId: Int!, $content: String!) {
-  task: addTask(cardId: $cardId, content: $content) {
-    ...TaskFragment
-  }
-}
-    ${TaskFragmentFragmentDoc}`;
-
-export function useAddTaskMutation() {
-  return Urql.useMutation<AddTaskMutation, AddTaskMutationVariables>(AddTaskDocument);
-};
-export const AddToFavoritesDocument = gql`
-    mutation AddToFavorites($id: Int!) {
-  addToFavorites(id: $id)
-}
-    `;
-
-export function useAddToFavoritesMutation() {
-  return Urql.useMutation<AddToFavoritesMutation, AddToFavoritesMutationVariables>(AddToFavoritesDocument);
-};
-export const AllFavoritesDocument = gql`
-    query AllFavorites {
-  favorites: allFavorites {
-    ...BoardFragment
-  }
-}
-    ${BoardFragmentFragmentDoc}`;
-
-export function useAllFavoritesQuery(options?: Omit<Urql.UseQueryArgs<AllFavoritesQueryVariables>, 'query'>) {
-  return Urql.useQuery<AllFavoritesQuery>({ query: AllFavoritesDocument, ...options });
-};
-export const CreateBoardDocument = gql`
-    mutation CreateBoard($title: String!) {
-  board: createBoard(title: $title) {
-    ...BoardFragment
-  }
-}
-    ${BoardFragmentFragmentDoc}`;
-
-export function useCreateBoardMutation() {
-  return Urql.useMutation<CreateBoardMutation, CreateBoardMutationVariables>(CreateBoardDocument);
+export function useCreateProjectMutation() {
+  return Urql.useMutation<CreateProjectMutation, CreateProjectMutationVariables>(CreateProjectDocument);
 };
 export const CreateUserDocument = gql`
     mutation CreateUser($password: String!, $email: String!, $username: String!) {
@@ -651,14 +313,14 @@ export const CreateUserDocument = gql`
 export function useCreateUserMutation() {
   return Urql.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument);
 };
-export const DeleteBoardDocument = gql`
-    mutation DeleteBoard($id: Int!) {
-  id: deleteBoard(id: $id)
+export const DeleteProjectDocument = gql`
+    mutation DeleteProject($id: Int!) {
+  id: deleteProject(id: $id)
 }
     `;
 
-export function useDeleteBoardMutation() {
-  return Urql.useMutation<DeleteBoardMutation, DeleteBoardMutationVariables>(DeleteBoardDocument);
+export function useDeleteProjectMutation() {
+  return Urql.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument);
 };
 export const LoginWithPasswordDocument = gql`
     mutation LoginWithPassword($password: String!, $email: String!) {
@@ -686,173 +348,67 @@ export const LogoutDocument = gql`
 export function useLogoutMutation() {
   return Urql.useMutation<LogoutMutation, LogoutMutationVariables>(LogoutDocument);
 };
-export const MoveCardDocument = gql`
-    mutation MoveCard($toIndex: Int!, $toColumnId: Int!, $id: Int!) {
-  card: moveCard(toIndex: $toIndex, toColumnId: $toColumnId, id: $id) {
-    id
-  }
+export const RemoveTodoDocument = gql`
+    mutation RemoveTodo($id: Int!) {
+  id: removeTodo(id: $id)
 }
     `;
 
-export function useMoveCardMutation() {
-  return Urql.useMutation<MoveCardMutation, MoveCardMutationVariables>(MoveCardDocument);
+export function useRemoveTodoMutation() {
+  return Urql.useMutation<RemoveTodoMutation, RemoveTodoMutationVariables>(RemoveTodoDocument);
 };
-export const RemoveCardDocument = gql`
-    mutation removeCard($id: Int!) {
-  id: removeCard(id: $id)
+export const RestoreProjectDocument = gql`
+    mutation RestoreProject($id: Int!) {
+  id: restoreProject(id: $id)
 }
     `;
 
-export function useRemoveCardMutation() {
-  return Urql.useMutation<RemoveCardMutation, RemoveCardMutationVariables>(RemoveCardDocument);
+export function useRestoreProjectMutation() {
+  return Urql.useMutation<RestoreProjectMutation, RestoreProjectMutationVariables>(RestoreProjectDocument);
 };
-export const RemoveColumnDocument = gql`
-    mutation RemoveColumn($id: Int!) {
-  id: removeColumn(id: $id)
-}
-    `;
-
-export function useRemoveColumnMutation() {
-  return Urql.useMutation<RemoveColumnMutation, RemoveColumnMutationVariables>(RemoveColumnDocument);
-};
-export const RemoveCommentDocument = gql`
-    mutation RemoveComment($id: Int!) {
-  id: removeComment(id: $id)
-}
-    `;
-
-export function useRemoveCommentMutation() {
-  return Urql.useMutation<RemoveCommentMutation, RemoveCommentMutationVariables>(RemoveCommentDocument);
-};
-export const RemoveFromFavoritesDocument = gql`
-    mutation RemoveFromFavorites($id: Int!) {
-  removeFromFavorites(id: $id)
-}
-    `;
-
-export function useRemoveFromFavoritesMutation() {
-  return Urql.useMutation<RemoveFromFavoritesMutation, RemoveFromFavoritesMutationVariables>(RemoveFromFavoritesDocument);
-};
-export const RemoveTaskDocument = gql`
-    mutation RemoveTask($id: Int!) {
-  id: removeTask(id: $id)
-}
-    `;
-
-export function useRemoveTaskMutation() {
-  return Urql.useMutation<RemoveTaskMutation, RemoveTaskMutationVariables>(RemoveTaskDocument);
-};
-export const ResetPasswordDocument = gql`
-    mutation ResetPassword($newPassword: String!, $token: String!) {
-  resetPassword(newPassword: $newPassword, token: $token) {
-    errors {
-      field
-      message
-    }
-    user {
-      ...UserFragment
-    }
+export const UpdateProjectDocument = gql`
+    mutation UpdateProject($id: Int!, $title: String) {
+  project: updateProject(id: $id, title: $title) {
+    ...ProjectFragment
   }
 }
-    ${UserFragmentFragmentDoc}`;
+    ${ProjectFragmentFragmentDoc}`;
 
-export function useResetPasswordMutation() {
-  return Urql.useMutation<ResetPasswordMutation, ResetPasswordMutationVariables>(ResetPasswordDocument);
+export function useUpdateProjectMutation() {
+  return Urql.useMutation<UpdateProjectMutation, UpdateProjectMutationVariables>(UpdateProjectDocument);
 };
-export const RestoreBoardDocument = gql`
-    mutation RestoreBoard($id: Int!) {
-  id: restoreBoard(id: $id)
-}
-    `;
-
-export function useRestoreBoardMutation() {
-  return Urql.useMutation<RestoreBoardMutation, RestoreBoardMutationVariables>(RestoreBoardDocument);
-};
-export const SendResetPasswordEmailDocument = gql`
-    mutation SendResetPasswordEmail($email: String!) {
-  sendResetPasswordEmail(email: $email)
-}
-    `;
-
-export function useSendResetPasswordEmailMutation() {
-  return Urql.useMutation<SendResetPasswordEmailMutation, SendResetPasswordEmailMutationVariables>(SendResetPasswordEmailDocument);
-};
-export const UpdateBoardDocument = gql`
-    mutation UpdateBoard($id: Int!, $title: String) {
-  board: updateBoard(id: $id, title: $title) {
-    ...BoardFragment
+export const UpdateTodoDocument = gql`
+    mutation UpdateTodo($id: Int!, $content: String, $completed: Boolean) {
+  todo: updateTodo(id: $id, content: $content, completed: $completed) {
+    ...TodoFragment
   }
 }
-    ${BoardFragmentFragmentDoc}`;
+    ${TodoFragmentFragmentDoc}`;
 
-export function useUpdateBoardMutation() {
-  return Urql.useMutation<UpdateBoardMutation, UpdateBoardMutationVariables>(UpdateBoardDocument);
+export function useUpdateTodoMutation() {
+  return Urql.useMutation<UpdateTodoMutation, UpdateTodoMutationVariables>(UpdateTodoDocument);
 };
-export const UpdateCardDocument = gql`
-    mutation UpdateCard($id: Int!, $description: String, $title: String) {
-  updateCard(id: $id, description: $description, title: $title) {
-    ...CardFragment
+export const AllDeletedProjectsDocument = gql`
+    query AllDeletedProjects {
+  projects: allDeletedProjects {
+    ...ProjectFragment
   }
 }
-    ${CardFragmentFragmentDoc}`;
+    ${ProjectFragmentFragmentDoc}`;
 
-export function useUpdateCardMutation() {
-  return Urql.useMutation<UpdateCardMutation, UpdateCardMutationVariables>(UpdateCardDocument);
+export function useAllDeletedProjectsQuery(options?: Omit<Urql.UseQueryArgs<AllDeletedProjectsQueryVariables>, 'query'>) {
+  return Urql.useQuery<AllDeletedProjectsQuery>({ query: AllDeletedProjectsDocument, ...options });
 };
-export const UpdateColumnDocument = gql`
-    mutation UpdateColumn($id: Int!, $title: String) {
-  column: updateColumn(id: $id, title: $title) {
-    ...ColumnFragment
+export const AllProjectsDocument = gql`
+    query AllProjects {
+  projects: allProjects {
+    ...ProjectFragment
   }
 }
-    ${ColumnFragmentFragmentDoc}`;
+    ${ProjectFragmentFragmentDoc}`;
 
-export function useUpdateColumnMutation() {
-  return Urql.useMutation<UpdateColumnMutation, UpdateColumnMutationVariables>(UpdateColumnDocument);
-};
-export const UpdateCommentDocument = gql`
-    mutation UpdateComment($content: String!, $id: Int!) {
-  comment: updateComment(content: $content, id: $id) {
-    ...CommentFragment
-  }
-}
-    ${CommentFragmentFragmentDoc}`;
-
-export function useUpdateCommentMutation() {
-  return Urql.useMutation<UpdateCommentMutation, UpdateCommentMutationVariables>(UpdateCommentDocument);
-};
-export const UpdateTaskDocument = gql`
-    mutation UpdateTask($id: Int!, $content: String, $completed: Boolean) {
-  task: updateTask(id: $id, content: $content, completed: $completed) {
-    ...TaskFragment
-  }
-}
-    ${TaskFragmentFragmentDoc}`;
-
-export function useUpdateTaskMutation() {
-  return Urql.useMutation<UpdateTaskMutation, UpdateTaskMutationVariables>(UpdateTaskDocument);
-};
-export const AllBoardsDocument = gql`
-    query AllBoards {
-  boards: allBoards {
-    ...BoardFragment
-  }
-}
-    ${BoardFragmentFragmentDoc}`;
-
-export function useAllBoardsQuery(options?: Omit<Urql.UseQueryArgs<AllBoardsQueryVariables>, 'query'>) {
-  return Urql.useQuery<AllBoardsQuery>({ query: AllBoardsDocument, ...options });
-};
-export const AllDeletedBoardsDocument = gql`
-    query AllDeletedBoards {
-  boards: allDeletedBoards {
-    ...BoardFragment
-  }
-}
-    ${BoardFragmentFragmentDoc}`;
-
-export function useAllDeletedBoardsQuery(options?: Omit<Urql.UseQueryArgs<AllDeletedBoardsQueryVariables>, 'query'>) {
-  return Urql.useQuery<AllDeletedBoardsQuery>({ query: AllDeletedBoardsDocument, ...options });
+export function useAllProjectsQuery(options?: Omit<Urql.UseQueryArgs<AllProjectsQueryVariables>, 'query'>) {
+  return Urql.useQuery<AllProjectsQuery>({ query: AllProjectsDocument, ...options });
 };
 export const CurrentUserDocument = gql`
     query CurrentUser {
@@ -865,49 +421,18 @@ export const CurrentUserDocument = gql`
 export function useCurrentUserQuery(options?: Omit<Urql.UseQueryArgs<CurrentUserQueryVariables>, 'query'>) {
   return Urql.useQuery<CurrentUserQuery>({ query: CurrentUserDocument, ...options });
 };
-export const FindBoardByIdDocument = gql`
-    query FindBoardById($id: Int!) {
-  board: findBoardById(id: $id) {
-    id
-    title
-    favorite
-    createdBy {
-      id
-      username
-    }
-    columns {
-      ...ColumnFragment
-    }
-    createdAt
-    updatedAt
-  }
-}
-    ${ColumnFragmentFragmentDoc}`;
-
-export function useFindBoardByIdQuery(options: Omit<Urql.UseQueryArgs<FindBoardByIdQueryVariables>, 'query'>) {
-  return Urql.useQuery<FindBoardByIdQuery>({ query: FindBoardByIdDocument, ...options });
-};
-export const FindCardByIdDocument = gql`
-    query FindCardById($id: Int!) {
-  card: findCardById(id: $id) {
-    id
-    title
-    description
-    column {
-      id
-      title
-    }
-    tasks {
-      ...TaskFragment
-    }
-    comments {
-      ...CommentFragment
+export const FindProjectBySlugDocument = gql`
+    query FindProjectBySlug($slug: String!) {
+  project: findProjectBySlug(slug: $slug) {
+    ...ProjectFragment
+    todos {
+      ...TodoFragment
     }
   }
 }
-    ${TaskFragmentFragmentDoc}
-${CommentFragmentFragmentDoc}`;
+    ${ProjectFragmentFragmentDoc}
+${TodoFragmentFragmentDoc}`;
 
-export function useFindCardByIdQuery(options: Omit<Urql.UseQueryArgs<FindCardByIdQueryVariables>, 'query'>) {
-  return Urql.useQuery<FindCardByIdQuery>({ query: FindCardByIdDocument, ...options });
+export function useFindProjectBySlugQuery(options: Omit<Urql.UseQueryArgs<FindProjectBySlugQueryVariables>, 'query'>) {
+  return Urql.useQuery<FindProjectBySlugQuery>({ query: FindProjectBySlugDocument, ...options });
 };

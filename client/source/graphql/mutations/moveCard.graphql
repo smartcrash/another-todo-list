@@ -1,5 +1,0 @@
-mutation MoveCard($toIndex: Int!, $toColumnId: Int!, $id: Int!) {
-  card: moveCard(toIndex: $toIndex, toColumnId: $toColumnId, id: $id) {
-    id
-  }
-}
