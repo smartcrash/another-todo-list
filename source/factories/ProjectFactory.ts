@@ -6,5 +6,6 @@ import { EntityFactory } from '../EntityFactory'
 export const ProjectFactory = new EntityFactory(Project, () => {
   const project = new Project()
   project.title = faker.lorem.words()
+  project.slug = faker.lorem.sentence()
   return project
 })
