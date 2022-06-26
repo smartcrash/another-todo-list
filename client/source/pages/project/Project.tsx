@@ -25,7 +25,7 @@ export const Project = () => {
 
   const [showCompleted, toggleShowCompleted] = useToggle(true);
 
-  if (fetching) return <>Loading</>; // TODO: Add skeleton
+  if (fetching) return <>Loading...</>;
   if (!data && error) return <>Something went wrong: {error.message}</>;
   if (!data?.project) return <Navigate to={route("index")} />;
 
