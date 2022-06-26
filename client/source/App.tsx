@@ -25,26 +25,24 @@ function App() {
 
   return (
     <Router>
-      <Suspense>
-        <Routes>
-          {fetching ? (
-            <Route path="*" element={<Loading />} />
-          ) : user ? (
-            <>
-              <Route path={routes.index} element={<Dashboard />}>
-                <Route path={routes.project} element={<Project />} />
-              </Route>
-              <Route path="*" element={<Navigate to={routes.index} replace />} />
-            </>
-          ) : (
-            <>
-              <Route path={routes.login} element={<Login />} />
-              <Route path={routes.signUp} element={<SignUp />} />
-              <Route path="*" element={<Navigate to={routes.login} replace />} />
-            </>
-          )}
-        </Routes>
-      </Suspense>
+      <Routes>
+        {fetching ? (
+          <Route path="*" element={<Loading />} />
+        ) : user ? (
+          <>
+            <Route path={routes.index} element={<Dashboard />}>
+              <Route path={routes.project} element={<Project />} />
+            </Route>
+            <Route path="*" element={<Navigate to={routes.index} replace />} />
+          </>
+        ) : (
+          <>
+            <Route path={routes.login} element={<Login />} />
+            <Route path={routes.signUp} element={<SignUp />} />
+            <Route path="*" element={<Navigate to={routes.login} replace />} />
+          </>
+        )}
+      </Routes>
     </Router>
   );
 }
