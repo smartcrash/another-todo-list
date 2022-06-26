@@ -1,4 +1,5 @@
 import { Button, Divider, Heading, Spacer } from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 import {
   useAllDeletedProjectsQuery,
   useAllProjectsQuery,
@@ -7,9 +8,11 @@ import {
   useRestoreProjectMutation,
 } from "../../../generated/graphql";
 import { useToggle } from "../../../hooks";
+import { route } from "../../../routes";
 import { ProjectAdder, ProjectItem, ProjectList } from "./";
 
 export const DrawerContent = () => {
+  const navigate = useNavigate();
   const [showDeleted, toggleShowDeleted] = useToggle();
   const [{ data = { projects: [] }, fetching }] = useAllProjectsQuery();
   const [{ data: deleted = { projects: [] }, fetching: fetchingDeleted }] = useAllDeletedProjectsQuery({
@@ -18,6 +21,15 @@ export const DrawerContent = () => {
   const [, createProject] = useCreateProjectMutation();
   const [, deleteProject] = useDeleteProjectMutation();
   const [, restoreProject] = useRestoreProjectMutation();
+
+  const confirmProject = async (title: string) => {
+    const { data } = await createProject({ title });
+
+    if (data?.project) {
+      const { slug } = data.project;
+      navigate(route("project", { slug }));
+    }
+  };
 
   return (
     <>
@@ -35,7 +47,7 @@ export const DrawerContent = () => {
 
       <Spacer h={5} />
 
-      <ProjectAdder onConfirm={(title) => createProject({ title })} />
+      <ProjectAdder onConfirm={confirmProject} />
 
       <Divider my={4} borderColor={"gray.300"} />
 

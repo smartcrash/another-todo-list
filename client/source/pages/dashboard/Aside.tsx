@@ -1,4 +1,4 @@
-import { Show, Box } from "@chakra-ui/react";
+import { Box, Show } from "@chakra-ui/react";
 import { Drawer, DrawerContent } from "./components";
 
 export const Aside = () => {
