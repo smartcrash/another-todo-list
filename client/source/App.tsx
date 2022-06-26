@@ -4,11 +4,20 @@ import { useCurrentUserQuery } from "./generated/graphql";
 import Loading from "./pages/loading";
 import { routes } from "./routes";
 
-const Login = lazy(() => import("./pages/login"));
-const SignUp = lazy(() => import("./pages/sign-up"));
+const loadable = (module: string) => () => {
+  const Component = lazy(() => import(module));
 
-const Dashboard = lazy(() => import("./pages/dashboard"));
-const Project = lazy(() => import("./pages/project"));
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <Component />
+    </Suspense>
+  );
+};
+
+const Login = loadable("./pages/login");
+const SignUp = loadable("./pages/sign-up");
+const Dashboard = loadable("./pages/dashboard");
+const Project = loadable("./pages/project");
 
 function App() {
   const [{ data, fetching }] = useCurrentUserQuery();
@@ -16,7 +25,7 @@ function App() {
 
   return (
     <Router>
-      <Suspense fallback={<Loading />}>
+      <Suspense>
         <Routes>
           {fetching ? (
             <Route path="*" element={<Loading />} />
