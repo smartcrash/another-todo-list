@@ -12,9 +12,16 @@ export const Dashboard = () => {
 
       <Stack h={"100vh"} spacing={0}>
         <NavBar />
-        <HStack alignItems={"stretch"} flexGrow={1} spacing={0}>
+        <HStack alignItems={"stretch"} flexGrow={1} spacing={0} position={"relative"}>
           <Aside />
-          <Container flexGrow={1} pt={6} as={"main"}>
+          <Container
+            flexGrow={1}
+            as={"main"}
+            pt={{
+              base: 16, // Make space for Drawer toggler
+              md: 6,
+            }}
+          >
             <Outlet />
           </Container>
         </HStack>
