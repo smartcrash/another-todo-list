@@ -11,10 +11,7 @@ import {
 import { API_URL } from './constants';
 import {
   AddTodoMutation,
-  AddTodoMutationVariables,
-  AllDeletedProjectsDocument,
-  AllDeletedProjectsQuery,
-  AllProjectsDocument,
+  AddTodoMutationVariables, AllProjectsDocument,
   AllProjectsQuery,
   CreateProjectMutation,
   CreateProjectMutationVariables,
@@ -75,25 +72,16 @@ export const createUrqlClient = () => createClient({
           },
 
           deleteProject(result: DeleteProjectMutation, args: DeleteProjectMutationVariables, cache, info) {
-            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.id }) as Project | null
-
+            cache.invalidate({ __typename: 'Project', id: args.id })
             cache.invalidate('Query', 'allDeletedProjects')
-            cache.invalidate('Query', 'findProjectById', { id: args.id })
-            cache.invalidate('Query', 'findProjectBySlug', { slug: project?.slug! })
-
-            cache.updateQuery(
-              { query: AllProjectsDocument },
-              (data: AllProjectsQuery | null) => ({ projects: (data?.projects || []).filter((project) => project.id !== args.id) })
-            )
           },
 
           restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
-            cache.invalidate('Query', 'allProjects')
+            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.id }) as Project | null
 
-            cache.updateQuery(
-              { query: AllDeletedProjectsDocument },
-              (data: AllDeletedProjectsQuery | null) => ({ projects: (data?.projects || []).filter((project) => project.id !== args.id) })
-            )
+            cache.invalidate({ __typename: 'Project', id: args.id })
+            cache.invalidate('Query', 'allProjects')
+            cache.invalidate('Query', 'findProjectBySlug', { slug: project?.slug! })
           },
 
           addTodo(result: AddTodoMutation, args: AddTodoMutationVariables, cache, info) {
