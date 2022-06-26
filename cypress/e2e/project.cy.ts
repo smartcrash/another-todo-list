@@ -75,6 +75,11 @@ describe('Project CRUD', () => {
     })
 
     it('can go to project\'s page on click', () => {
+      // Right after a project is created we are redirected to the project's page.
+      // Revert this visiting '/' and then that we are redirected by clicking
+      // 'project-list` item
+      cy.visit('/')
+
       cy.location('pathname').should('not.contain', slugify(currentProject))
       cy.getByTestId('project-list').contains(currentProject).click()
       cy.location('pathname').should('contain', slugify(currentProject))
