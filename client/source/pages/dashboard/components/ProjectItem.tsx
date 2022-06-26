@@ -27,6 +27,7 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
   return (
     <Link
       to={route("project", { slug })}
+      style={{ cursor: deletedAt ? "default" : undefined }}
       onClick={(event) => {
         // NOTE: Prevent redirection if the project is deleted
         if (deletedAt) event.preventDefault();
