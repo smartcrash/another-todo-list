@@ -4,8 +4,8 @@ import { useCurrentUserQuery } from "./generated/graphql";
 import Loading from "./pages/loading";
 import { routes } from "./routes";
 
-const loadable = (module: string) => () => {
-  const Component = lazy(() => import(module));
+const loadable = (factory: Parameters<typeof lazy>[0]) => () => {
+  const Component = lazy(factory);
 
   return (
     <Suspense fallback={<p>Loading...</p>}>
@@ -14,10 +14,10 @@ const loadable = (module: string) => () => {
   );
 };
 
-const Login = loadable("./pages/login");
-const SignUp = loadable("./pages/sign-up");
-const Dashboard = loadable("./pages/dashboard");
-const Project = loadable("./pages/project");
+const Login = loadable(() => import("./pages/login"));
+const SignUp = loadable(() => import("./pages/sign-up"));
+const Dashboard = loadable(() => import("./pages/dashboard"));
+const Project = loadable(() => import("./pages/project"));
 
 function App() {
   const [{ data, fetching }] = useCurrentUserQuery();
