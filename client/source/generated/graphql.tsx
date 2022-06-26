@@ -238,6 +238,13 @@ export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 export type CurrentUserQuery = { __typename?: 'Query', currentUser?: { __typename?: 'User', id: number, username: string, email: string, createdAt: string, updatedAt: string } | null };
 
+export type FindProjectByIdQueryVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type FindProjectByIdQuery = { __typename?: 'Query', project?: { __typename?: 'Project', id: number, title: string, slug: string, createdAt: string, updatedAt: string, deletedAt?: string | null, todos: Array<{ __typename?: 'Todo', id: number, content: string, completed: boolean, completedAt?: string | null, createdAt: string, updatedAt: string }> } | null };
+
 export type FindProjectBySlugQueryVariables = Exact<{
   slug: Scalars['String'];
 }>;
@@ -420,6 +427,21 @@ export const CurrentUserDocument = gql`
 
 export function useCurrentUserQuery(options?: Omit<Urql.UseQueryArgs<CurrentUserQueryVariables>, 'query'>) {
   return Urql.useQuery<CurrentUserQuery>({ query: CurrentUserDocument, ...options });
+};
+export const FindProjectByIdDocument = gql`
+    query FindProjectById($id: Int!) {
+  project: findProjectById(id: $id) {
+    ...ProjectFragment
+    todos {
+      ...TodoFragment
+    }
+  }
+}
+    ${ProjectFragmentFragmentDoc}
+${TodoFragmentFragmentDoc}`;
+
+export function useFindProjectByIdQuery(options: Omit<Urql.UseQueryArgs<FindProjectByIdQueryVariables>, 'query'>) {
+  return Urql.useQuery<FindProjectByIdQuery>({ query: FindProjectByIdDocument, ...options });
 };
 export const FindProjectBySlugDocument = gql`
     query FindProjectBySlug($slug: String!) {
