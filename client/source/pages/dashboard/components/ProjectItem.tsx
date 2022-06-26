@@ -6,10 +6,15 @@ import { useHover } from "../../../hooks";
 import { ArchiveIcon, DotsHorizontalIcon, TrashIcon } from "../../../icons";
 import { route } from "../../../routes";
 
-interface ProjectItemProps {
-  project: Project;
-  onDelete?: (project: Project) => void;
-  onRestore?: (project: Project) => void;
+// NOTE: Remove `todo` property from Project type to fix
+//       errors from type mismatch between return values
+//       of `allProject` and `finProjectBySlug`.
+//       `finProjectBySlug` has the `todo` property and `allProject` Query don't
+// FIXME: Find a better way to fix this
+interface ProjectItemProps<P = Omit<Project, "todos">> {
+  project: P;
+  onDelete?: (project: P) => void;
+  onRestore?: (project: P) => void;
 }
 
 export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {} }: ProjectItemProps) => {
