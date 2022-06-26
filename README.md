@@ -2,6 +2,8 @@
 
 Yet another simple and beautiful TODO list app made with React and GraphQL, all written in TypeScript.
 
+![](screenshot.png)
+
 ## Getting started
 
 Clone the repo locally:
