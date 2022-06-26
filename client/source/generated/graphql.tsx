@@ -33,6 +33,7 @@ export type Mutation = {
   createProject: Project;
   createUser: AuthenticationResponse;
   deleteProject?: Maybe<Scalars['Int']>;
+  forceDeleteProject: Scalars['Int'];
   loginWithPassword: AuthenticationResponse;
   logout: Scalars['Boolean'];
   removeTodo: Scalars['Int'];
@@ -61,6 +62,11 @@ export type MutationCreateUserArgs = {
 
 
 export type MutationDeleteProjectArgs = {
+  id: Scalars['Int'];
+};
+
+
+export type MutationForceDeleteProjectArgs = {
   id: Scalars['Int'];
 };
 
@@ -178,6 +184,13 @@ export type DeleteProjectMutationVariables = Exact<{
 
 
 export type DeleteProjectMutation = { __typename?: 'Mutation', id?: number | null };
+
+export type ForceDeleteProjectMutationVariables = Exact<{
+  id: Scalars['Int'];
+}>;
+
+
+export type ForceDeleteProjectMutation = { __typename?: 'Mutation', id: number };
 
 export type LoginWithPasswordMutationVariables = Exact<{
   password: Scalars['String'];
@@ -328,6 +341,15 @@ export const DeleteProjectDocument = gql`
 
 export function useDeleteProjectMutation() {
   return Urql.useMutation<DeleteProjectMutation, DeleteProjectMutationVariables>(DeleteProjectDocument);
+};
+export const ForceDeleteProjectDocument = gql`
+    mutation ForceDeleteProject($id: Int!) {
+  id: forceDeleteProject(id: $id)
+}
+    `;
+
+export function useForceDeleteProjectMutation() {
+  return Urql.useMutation<ForceDeleteProjectMutation, ForceDeleteProjectMutationVariables>(ForceDeleteProjectDocument);
 };
 export const LoginWithPasswordDocument = gql`
     mutation LoginWithPassword($password: String!, $email: String!) {

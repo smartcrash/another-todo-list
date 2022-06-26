@@ -5,6 +5,7 @@ import {
   useAllProjectsQuery,
   useCreateProjectMutation,
   useDeleteProjectMutation,
+  useForceDeleteProjectMutation,
   useRestoreProjectMutation,
 } from "../../../generated/graphql";
 import { useToggle } from "../../../hooks";
@@ -21,6 +22,7 @@ export const DrawerContent = () => {
   const [, createProject] = useCreateProjectMutation();
   const [, deleteProject] = useDeleteProjectMutation();
   const [, restoreProject] = useRestoreProjectMutation();
+  const [, forceDelete] = useForceDeleteProjectMutation();
 
   const confirmProject = async (title: string) => {
     const { data } = await createProject({ title });
@@ -71,7 +73,12 @@ export const DrawerContent = () => {
           data-testid={"deleted-project-list"}
         >
           {deleted.projects.map((project) => (
-            <ProjectItem project={project} onRestore={({ id }) => restoreProject({ id })} key={project.id} />
+            <ProjectItem
+              project={project}
+              onForceDelete={({ id }) => forceDelete({ id })}
+              onRestore={({ id }) => restoreProject({ id })}
+              key={project.id}
+            />
           ))}
         </ProjectList>
       </div>

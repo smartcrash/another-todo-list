@@ -1,0 +1,3 @@
+mutation ForceDeleteProject($id: Int!) {
+  id: forceDeleteProject(id: $id)
+}

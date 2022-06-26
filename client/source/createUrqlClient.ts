@@ -20,7 +20,7 @@ import {
   CurrentUserQuery,
   DeleteProjectMutation,
   DeleteProjectMutationVariables,
-  FindProjectByIdDocument, FindProjectByIdQuery, LoginWithPasswordMutation, RemoveTodoMutation,
+  FindProjectByIdDocument, FindProjectByIdQuery, ForceDeleteProjectMutation, ForceDeleteProjectMutationVariables, LoginWithPasswordMutation, RemoveTodoMutation,
   RemoveTodoMutationVariables,
   RestoreProjectMutation,
   RestoreProjectMutationVariables
@@ -69,6 +69,10 @@ export const createUrqlClient = () => createClient({
           deleteProject(result: DeleteProjectMutation, args: DeleteProjectMutationVariables, cache, info) {
             cache.invalidate({ __typename: 'Project', id: args.id })
             cache.invalidate('Query', 'allDeletedProjects')
+          },
+
+          forceDeleteProject(result: ForceDeleteProjectMutation, args: ForceDeleteProjectMutationVariables, cache, info) {
+            cache.invalidate({ __typename: 'Project', id: args.id })
           },
 
           restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
