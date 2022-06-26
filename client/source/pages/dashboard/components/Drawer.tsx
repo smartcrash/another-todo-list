@@ -7,11 +7,20 @@ import {
   DrawerContent as ChakraDrawerContent,
   DrawerOverlay,
   useDisclosure,
+  useUpdateEffect,
 } from "@chakra-ui/react";
+import { useLocation } from "react-router-dom";
 import { DrawerContent } from "./DrawerContent";
 
 export const Drawer = () => {
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const location = useLocation();
+
+  useUpdateEffect(() => {
+    // If the location change we asume that the user clicked on
+    // one of his project's item, therefore we should close the modal.
+    if (isOpen) onClose();
+  }, [location]);
 
   return (
     <>
