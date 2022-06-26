@@ -12,7 +12,6 @@ export const TodoAdder = ({ onConfirm }: TodoAdderProps) => {
 
   function confirmTodo(content: string) {
     onConfirm(content);
-    setAddingTodo(false);
   }
 
   return isAddingTodo ? (
