@@ -11,6 +11,7 @@ const CreateProjectMutation = `
     project: createProject(title: $title) {
       id
       title
+      slug
     }
   }
 `
@@ -96,7 +97,11 @@ test.group('createProject', () => {
     expect(data).toBeTruthy()
 
     expect(data.project).toBeDefined()
+    expect(typeof data.project.id).toBe('number')
     expect(data.project.title).toBe(title)
+
+    // The slug should consist on the projects title and it's id
+    expect(data.project.slug).toBe(slugify(title) + '-' + data.project.id)
 
     const { id } = data.project
     const project = await ProjectRepository.findOneBy({ id })
@@ -105,8 +110,6 @@ test.group('createProject', () => {
     expect(project.title).toBe(title)
     expect(project.userId).toBe(user.id)
 
-    // The slugh should consist on the projects title and it's id
-    expect(project.slug).toBe(slugify(title) + '-' + id)
   })
 })
 

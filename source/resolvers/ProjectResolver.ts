@@ -77,7 +77,9 @@ export class ProjectResolver {
 
     await ProjectRepository.save(project)
 
-    return project
+    // Ensure to return the updated entity, with the correct slug and not the
+    // temporary one.
+    return ProjectRepository.findOneBy({ id: project.id })
   }
 
   @UseMiddleware(Authenticate)
