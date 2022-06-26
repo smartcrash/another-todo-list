@@ -11,6 +11,7 @@ const CreateProjectMutation = `
     project: createProject(title: $title) {
       id
       title
+      slug
     }
   }
 `
@@ -73,6 +74,12 @@ const RestoreProjectMutation = `
   }
 `
 
+const ForceDeleteProjectMutation = `
+  mutation ForceDeleteProject($id: Int!) {
+    id: forceDeleteProject(id: $id)
+  }
+`
+
 test.group('createProject', () => {
   testThrowsIfNotAuthenticated({
     query: CreateProjectMutation,
@@ -96,15 +103,19 @@ test.group('createProject', () => {
     expect(data).toBeTruthy()
 
     expect(data.project).toBeDefined()
+    expect(typeof data.project.id).toBe('number')
     expect(data.project.title).toBe(title)
+
+    // The slug should consist on the projects title and it's id
+    expect(data.project.slug).toBe(slugify(title) + '-' + data.project.id)
 
     const { id } = data.project
     const project = await ProjectRepository.findOneBy({ id })
 
     expect(project).toBeDefined()
     expect(project.title).toBe(title)
-    expect(project.slug.startsWith(slugify(title))).toBe(true)
     expect(project.userId).toBe(user.id)
+
   })
 })
 
@@ -217,7 +228,10 @@ test.group('findProjectById', () => {
 
   test('should return project by slug', async ({ expect, client, createUser }) => {
     const [user, cookie] = await createUser(client)
-    const { id, slug } = await ProjectFactory.create({ userId: user.id })
+    const { id } = await ProjectFactory.create({ userId: user.id })
+
+    // IMPORTANT: Get the updated entity with the correct slug.
+    const { slug } = await ProjectRepository.findOneBy({ id })
 
     const queryData = {
       query: FindProjectBySlugQuery,
@@ -257,13 +271,13 @@ test.group('updateProject', () => {
   test('should update Project and return updated entity', async ({ expect, client, createUser }) => {
     const [user, cookie] = await createUser(client)
     const { id } = await ProjectFactory.create({ userId: user.id })
-    const title = faker.lorem.words()
+    const newTitle = faker.lorem.words()
 
     const queryData = {
       query: UpdateProjectMutation,
       variables: {
         id,
-        title,
+        title: newTitle,
       }
     }
 
@@ -271,8 +285,8 @@ test.group('updateProject', () => {
     const { data } = response.body()
 
     expect(data.project.id).toBe(id)
-    expect(data.project.title).toBe(title)
-    expect(data.project.slug.startsWith(slugify(title))).toBe(true)
+    expect(data.project.title).toBe(newTitle)
+    expect(data.project.slug).toBe(slugify(newTitle) + '-' + id)
   })
 
   test('should only be allowed to update if is owner', async ({ expect, client, createUser }) => {
@@ -338,6 +352,55 @@ test.group('deletProject', () => {
 
     const queryData = {
       query: DeleteProjectMutation,
+      variables: { id }
+    };
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+
+    assertIsForbiddenExeption({ response, expect })
+
+    const project = await ProjectRepository.findOne({ where: { id }, withDeleted: true })
+
+    expect(project).toBeDefined()
+    expect(project.deletedAt).toBeNull()
+  })
+})
+
+test.group('forceDeletProject', () => {
+  testThrowsIfNotAuthenticated({
+    query: ForceDeleteProjectMutation,
+    variables: { id: -1 }
+  })
+
+  test('should delete (for real) the project', async ({ expect, client, createUser }) => {
+    const [user, cookie] = await createUser(client)
+    const { id } = await ProjectFactory.create({ userId: user.id })
+
+    const queryData = {
+      query: ForceDeleteProjectMutation,
+      variables: { id }
+    };
+
+
+    const response = await client.post('/').cookie(SESSION_COOKIE, cookie).json(queryData)
+    const { data } = response.body()
+
+    expect(data.id).toBeDefined()
+    expect(data.id).toBe(id)
+
+    const project = await ProjectRepository.findOne({ where: { id }, withDeleted: true })
+
+    expect(project).toBeFalsy()
+  })
+
+  test('should not be able to delete someone else\'s project', async ({ expect, client, createUser }) => {
+    const [otherUser] = await createUser(client)
+    const [, cookie] = await createUser(client)
+
+    const { id } = await ProjectFactory.create({ userId: otherUser.id })
+
+    const queryData = {
+      query: ForceDeleteProjectMutation,
       variables: { id }
     };
 

@@ -80,9 +80,9 @@ describe('Project CRUD', () => {
       // 'project-list` item
       cy.visit('/')
 
-      cy.location('pathname').should('not.contain', slugify(currentProject))
+      cy.location('pathname').should('not.contain', slugify(currentProject, { strict: true }))
       cy.getByTestId('project-list').contains(currentProject).click()
-      cy.location('pathname').should('contain', slugify(currentProject))
+      cy.location('pathname').should('contain', slugify(currentProject, { strict: true }))
     })
 
     it('can edit project\'s title', () => {
@@ -90,7 +90,7 @@ describe('Project CRUD', () => {
 
       cy.getByTestId('project-list').contains(currentProject).click()
 
-      cy.location('pathname').should('contain', slugify(currentProject))
+      cy.location('pathname').should('contain', slugify(currentProject, { strict: true }))
 
       cy.getByTestId('title-form') // Get the content editable title
         .contains(currentProject) // Target the preview
@@ -100,7 +100,7 @@ describe('Project CRUD', () => {
         .type(`${newTitle}{enter}`) // Enter new title
 
       // The pathname should have changed
-      cy.location('pathname').should('contain', slugify(newTitle))
+      cy.location('pathname').should('contain', slugify(newTitle, { strict: true }))
 
       // The project item on the sidebar should update too
       cy.getByTestId('project-list').should('not.contain.text', currentProject)

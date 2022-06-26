@@ -20,12 +20,7 @@ import {
   CurrentUserQuery,
   DeleteProjectMutation,
   DeleteProjectMutationVariables,
-  FindProjectBySlugDocument,
-  FindProjectBySlugQuery,
-  LoginWithPasswordMutation,
-  Project,
-  ProjectFragmentFragmentDoc,
-  RemoveTodoMutation,
+  FindProjectByIdDocument, FindProjectByIdQuery, ForceDeleteProjectMutation, ForceDeleteProjectMutationVariables, LoginWithPasswordMutation, RemoveTodoMutation,
   RemoveTodoMutationVariables,
   RestoreProjectMutation,
   RestoreProjectMutationVariables
@@ -76,26 +71,25 @@ export const createUrqlClient = () => createClient({
             cache.invalidate('Query', 'allDeletedProjects')
           },
 
-          restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
-            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.id }) as Project | null
+          forceDeleteProject(result: ForceDeleteProjectMutation, args: ForceDeleteProjectMutationVariables, cache, info) {
+            cache.invalidate({ __typename: 'Project', id: args.id })
+          },
 
+          restoreProject(result: RestoreProjectMutation, args: RestoreProjectMutationVariables, cache, info) {
             cache.invalidate({ __typename: 'Project', id: args.id })
             cache.invalidate('Query', 'allProjects')
-            cache.invalidate('Query', 'findProjectBySlug', { slug: project?.slug! })
           },
 
           addTodo(result: AddTodoMutation, args: AddTodoMutationVariables, cache, info) {
             // This query may return `null` or `undefined`
             if (!result.todo) return
 
-            const project = cache.readFragment(ProjectFragmentFragmentDoc, { id: args.projectId }) as Project | null
-
             cache.updateQuery(
               {
-                query: FindProjectBySlugDocument,
-                variables: { slug: project?.slug }
+                query: FindProjectByIdDocument,
+                variables: { id: args.projectId }
               },
-              (data: FindProjectBySlugQuery | null) => {
+              (data: FindProjectByIdQuery | null) => {
                 if (!data || !data.project) return data
                 data.project.todos.push(result.todo!)
                 return data

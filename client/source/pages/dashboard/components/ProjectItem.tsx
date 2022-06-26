@@ -14,10 +14,16 @@ import { route } from "../../../routes";
 interface ProjectItemProps<P = Omit<Project, "todos">> {
   project: P;
   onDelete?: (project: P) => void;
+  onForceDelete?: (project: P) => void;
   onRestore?: (project: P) => void;
 }
 
-export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {} }: ProjectItemProps) => {
+export const ProjectItem = ({
+  project,
+  onDelete = () => {},
+  onRestore = () => {},
+  onForceDelete = () => {},
+}: ProjectItemProps) => {
   const hoverRef = useRef<HTMLDivElement>(null);
   const isHover = useHover(hoverRef);
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -66,16 +72,6 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
             />
             <MenuList>
               <MenuItem
-                onClick={() => onDelete(project)}
-                icon={<TrashIcon />}
-                // NOTE: Don't show this button if is already deleted
-                hidden={!!deletedAt}
-                data-testid={"delete-project"}
-              >
-                Delete project
-              </MenuItem>
-
-              <MenuItem
                 onClick={() => onRestore(project)}
                 icon={<ArchiveIcon />}
                 // NOTE: Only show this button if it was soft-deleted
@@ -83,6 +79,14 @@ export const ProjectItem = ({ project, onDelete = () => {}, onRestore = () => {}
                 data-testid={"restore-project"}
               >
                 Restore project
+              </MenuItem>
+
+              <MenuItem
+                onClick={() => (!!deletedAt ? onForceDelete(project) : onDelete(project))}
+                icon={<TrashIcon />}
+                data-testid={"delete-project"}
+              >
+                Delete project
               </MenuItem>
             </MenuList>
           </Menu>

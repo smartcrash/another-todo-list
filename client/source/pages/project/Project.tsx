@@ -4,7 +4,7 @@ import { Navigate, useParams } from "react-router-dom";
 import { Container, NonEmptyEditable } from "../../components";
 import {
   useAddTodoMutation,
-  useFindProjectBySlugQuery,
+  useFindProjectByIdQuery,
   useRemoveTodoMutation,
   useUpdateProjectMutation,
   useUpdateTodoMutation,
@@ -15,27 +15,27 @@ import { TodoAdder, TodoItem, TodoList } from "./components";
 
 export const Project = () => {
   const { slug = "" } = useParams<{ slug: string }>();
-  const [showCompleted, toggleShowCompleted] = useToggle(true);
-  const [{ data, fetching, error }] = useFindProjectBySlugQuery({ variables: { slug } });
+  const id = parseInt(slug.slice(slug.lastIndexOf("-") + 1)); // Extract ID from slug
+
+  const [{ data, fetching, error }] = useFindProjectByIdQuery({ variables: { id } });
   const [, updateProject] = useUpdateProjectMutation();
   const [, addTodo] = useAddTodoMutation();
   const [, updateTodo] = useUpdateTodoMutation();
   const [, removeTodo] = useRemoveTodoMutation();
 
+  const [showCompleted, toggleShowCompleted] = useToggle(true);
+
   if (fetching) return <>Loading</>; // TODO: Add skeleton
   if (!data && error) return <>Something went wrong: {error.message}</>;
   if (!data?.project) return <Navigate to={route("index")} />;
 
-  const { id, title, todos } = data.project;
+  const { title, todos } = data.project;
 
   const onTitleUpdate = async (title: string) => {
     const result = await updateProject({ id, title });
 
+    // Update the URL to show the new project's slug
     if (result.data?.project) {
-      // NOTE: When the project's title is updated it's slug is updated as well.
-      //       If we don't update the page URL, on the next re-render `useFindProjectBySlugQuery`
-      //       will fail to find the project and the component will rediect to '/'
-
       const newSlug = result.data.project.slug;
       const newUrl = route("project", { slug: newSlug });
 

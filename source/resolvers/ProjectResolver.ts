@@ -6,6 +6,11 @@ import { Authenticate } from "../middlewares/Authenticate";
 import { ProjectRepository } from "../repository/ProjectRepository";
 import { ContextType } from '../types';
 
+/**
+ * Generates an unique ID.
+ * @see https://stackoverflow.com/a/8084248
+ */
+const uniqueId = () => (Math.random() + 1).toString(36).substring(2)
 
 @Resolver(Project)
 export class ProjectResolver {
@@ -67,11 +72,14 @@ export class ProjectResolver {
     const project = new Project()
 
     project.title = title
+    project.slug = uniqueId() // Create a temporary value, it must be unique
     project.userId = user.id
 
     await ProjectRepository.save(project)
 
-    return project
+    // Ensure to return the updated entity, with the correct slug and not the
+    // temporary one.
+    return ProjectRepository.findOneBy({ id: project.id })
   }
 
   @UseMiddleware(Authenticate)
@@ -113,6 +121,15 @@ export class ProjectResolver {
     @Ctx() { user }: ContextType
   ): Promise<number | null> {
     await ProjectRepository.restore({ id, userId: user.id })
+
+    return id
+  }
+
+  @UseMiddleware(Authenticate)
+  @UseMiddleware(AllowIf('forceDelete-project'))
+  @Mutation(() => Int)
+  async forceDeleteProject(@Arg('id', () => Int) id: number): Promise<number | null> {
+    await ProjectRepository.delete({ id })
 
     return id
   }

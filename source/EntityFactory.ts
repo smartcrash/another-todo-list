@@ -51,6 +51,7 @@ export class EntityFactory<Entity> {
       const entity = await this.makeEnity(overrideParams)
       return await this.repository.save(entity)
     } catch (error) {
+      console.error(error);
       throw new Error('Could not save entity')
     }
   }

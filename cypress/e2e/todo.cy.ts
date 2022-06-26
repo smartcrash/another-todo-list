@@ -138,10 +138,14 @@ describe('Todo CRUD', () => {
     const unCheckedTask = chance.word()
     const checkedTask = chance.word();
 
+    cy.getByTestId('add-todo').click();
+
     // Create 3 tasks
     ;[unCheckedTask, checkedTask].forEach((newItem) => {
-      cy.getByTestId('add-todo').click()
-      cy.getByTestId('todo-form').get('input[type="text"]').type(`${newItem}{enter}`)
+      cy.getByTestId('todo-form')
+        .get('input[type="text"]')
+        .clear()
+        .type(`${newItem}{enter}`)
     })
 
     cy.getByTestId('todo-item').should('have.length.at.least', 2)
