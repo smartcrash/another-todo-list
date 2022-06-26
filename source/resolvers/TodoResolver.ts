@@ -1,4 +1,4 @@
-import { Arg, FieldResolver, Int, Mutation, Query, Resolver, Root, UseMiddleware } from "type-graphql";
+import { Arg, FieldResolver, Int, Mutation, Resolver, Root, UseMiddleware } from "type-graphql";
 import { IsNull } from "typeorm";
 import { Todo } from "../entity";
 import { AllowIf } from "../middlewares/AllowIf";

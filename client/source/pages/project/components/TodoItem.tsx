@@ -50,8 +50,11 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
         position={"relative"}
         ref={hoverRef}
         pr={12}
+        pl={4}
+        ml={-4}
         data-testid={"todo-item"}
         bg={isHover || isOpen ? "gray.100" : undefined}
+        borderRadius={"md"}
       >
         <HStack alignItems={"flex-start"} spacing={3}>
           <Checkbox
@@ -61,6 +64,7 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
             onChange={(event) => onUpdate({ ...todo, completed: event.target.checked })}
             size={"lg"}
             borderColor={"gray.600"}
+            isDisabled={completed}
           />
 
           <Box flexGrow={1}>
@@ -69,7 +73,12 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
               onSubmit={(content) => onUpdate({ ...todo, content })}
               fontSize={"sm"}
             >
-              <EditablePreview textDecor={completed ? "line-through" : undefined} cursor={"default"} />
+              <EditablePreview
+                textDecor={completed ? "line-through" : undefined}
+                cursor={"default"}
+                // This disable edition if the task is completed
+                pointerEvents={completed ? "none" : undefined}
+              />
               <EditableInput />
             </NonEmptyEditable>
 
@@ -83,7 +92,7 @@ export const TodoItem = ({ todo, onUpdate, onDelete }: TodoItemProps) => {
         </HStack>
 
         <Box
-          hidden={!isHover && !isOpen}
+          hidden={completed || (!isHover && !isOpen)}
           position={"absolute"}
           top={"6px"}
           right={2}

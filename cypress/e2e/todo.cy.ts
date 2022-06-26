@@ -20,6 +20,7 @@ describe('Todo CRUD', () => {
     cy.getByTestId('project-list').contains(projectTitle).click()
   })
 
+
   it('can add new todo items', () => {
     const newItem = chance.sentence({ words: 5 })
 
@@ -85,32 +86,70 @@ describe('Todo CRUD', () => {
     })
   })
 
-  it.only('can hide completed tasks', () => {
-    // Remove any existing task to have a clean state
-    cy.document().then(($document) => {
-      if ($document.querySelectorAll('[data-testid="delete-todo"]').length) {
-        cy.getByTestId('delete-todo').click({ force: true, multiple: true })
-        cy.getByTestId('todo-item').should('have.length', 1);
-      }
-    });
+  context('with a task marked as finished', () => {
+    let currentItem: string
 
-    const tasks = [
-      chance.word(),
-      chance.word(),
-    ]
+    beforeEach(() => {
+      currentItem = chance.sentence({ words: 5 })
+
+      cy.getByTestId('add-todo').click()
+      cy.getByTestId('todo-form').get('input[type="text"]').type(`${currentItem}{enter}`)
+
+      cy.contains(currentItem)
+        .closest('[data-testid="todo-item"]')
+        .find('input[type=checkbox]')
+        .check({ force: true })
+    })
+
+    it('can not un-check item as completed', () => {
+      cy.contains(currentItem)
+        .closest('[data-testid="todo-item"]')
+        .find('input[type=checkbox]')
+        .should('have.attr', 'disabled', 'disabled')
+    })
+
+    it('can not update the task', () => {
+      cy.getByTestId('todo-item')
+        .last()
+        .should('contain.text', currentItem)
+        .contains(currentItem)
+        // This element should be un-clickable, so you can not enter edit on mode
+        .should('have.css', 'pointer-events', 'none')
+    })
+
+    it('can not delete the task', () => {
+      cy.getByTestId('todo-item')
+        .last()
+        .should('contain.text', currentItem)
+        .within(element => {
+          cy.wrap(element)
+            .getByTestId('delete-todo')
+            // NOTE: The delete button still exists but is hidden
+            .click({ force: true })
+        })
+
+      // The task show be visible
+      cy.getByTestId('todo-list')
+        .should('contain.text', currentItem)
+    })
+  })
+
+  it('can hide completed tasks', () => {
+    const unCheckedTask = chance.word()
+    const checkedTask = chance.word();
 
     // Create 3 tasks
-    tasks.forEach((newItem) => {
+    ;[unCheckedTask, checkedTask].forEach((newItem) => {
       cy.getByTestId('add-todo').click()
       cy.getByTestId('todo-form').get('input[type="text"]').type(`${newItem}{enter}`)
     })
 
-    cy.getByTestId('todo-item')
-      .should('have.length', 2)
-      .last()
+    cy.getByTestId('todo-item').should('have.length.at.least', 2)
+
+    cy.contains(checkedTask)
       .closest('[data-testid="todo-item"]')
       .find('input[type=checkbox]')
-      .check({ force: true });
+      .check({ force: true })
 
 
     cy.getByTestId('toggle-show-completed').click()
@@ -118,22 +157,23 @@ describe('Todo CRUD', () => {
     // After filtering, we can assert that there is only the one
     // complete item in the list.
     cy.getByTestId('todo-item')
-      .should('have.length', 1)
-      .first()
-      .should('contain.text', tasks[0])
+      .should('have.length.at.least', 1)
 
-    // For good measure, let's also assert that the task we checked off
-    // does not exist on the page.
-    cy.contains(tasks[1]).should('not.exist')
+    // Unc-checked task should still be visible
+    cy.contains(unCheckedTask).should('be.visible')
+
+    // The task that was checked off should not exists
+    cy.contains(checkedTask).should('not.exist')
 
     // Now toggle back and check that all items are in the list again
 
     cy.getByTestId('toggle-show-completed').click()
 
     cy.getByTestId('todo-item')
-      .should('have.length', 2)
+      .should('have.length.at.least', 2)
 
-    cy.contains(tasks[0]).should('be.visible')
-    cy.contains(tasks[1]).should('be.visible')
+    // Now both tasks should be visible again
+    cy.contains(unCheckedTask).should('be.visible')
+    cy.contains(checkedTask).should('be.visible')
   })
 })
