@@ -1,4 +1,4 @@
-import { Button, EditableInput, EditablePreview, HStack, Spacer } from "@chakra-ui/react";
+import { Text, Button, EditableInput, EditablePreview, HStack, Progress, Spacer } from "@chakra-ui/react";
 import { Helmet } from "react-helmet";
 import { Navigate, useParams } from "react-router-dom";
 import { Container, NonEmptyEditable } from "../../components";
@@ -30,6 +30,7 @@ export const Project = () => {
   if (!data?.project) return <Navigate to={route("index")} />;
 
   const { title, todos } = data.project;
+  const progress = (todos.filter((todo) => todo.completed).length / todos.length) * 100;
 
   const onTitleUpdate = async (title: string) => {
     const result = await updateProject({ id, title });
@@ -75,6 +76,22 @@ export const Project = () => {
               >
                 {showCompleted ? "Hide" : "Show"} completed
               </Button>
+            </HStack>
+
+            <Spacer h={2} />
+
+            <HStack spacing={3}>
+              <Text color={"gray.500"} fontSize={"sm"}>
+                {progress.toFixed(0)}%
+              </Text>
+              <Progress
+                value={progress}
+                hasStripe
+                size={"sm"}
+                colorScheme={"primary"}
+                borderRadius={"full"}
+                flexGrow={1}
+              />
             </HStack>
 
             <Spacer h={2} />
