@@ -2,21 +2,10 @@ version: '3'
 
 services:
 
-  postgres:
-    image: postgres
-    restart: always
-    environment:
-      # TODO: Remove
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: olive
+  sqlite3:
+    image: keinos/sqlite3:latest
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-  redis:
-    image: redis
-    restart: always
-    command: redis-server --save 20 1 --loglevel warning
+      - ./db/:/root/db/
 
   server:
     build: .
@@ -24,12 +13,7 @@ services:
       - "4000:4000"
     environment:
       - NODE_ENV=production
-    # TODO: Remove
     env_file:
       - .env
     depends_on:
-      - postgres
-      - redis
-
-volumes:
-  pgdata:
+      - sqlite3
