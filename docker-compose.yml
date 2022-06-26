@@ -2,18 +2,11 @@ version: '3'
 
 services:
 
-  sqlite3:
-    image: keinos/sqlite3:latest
-    volumes:
-      - ./db/:/root/db/
-
   server:
     build: .
     ports:
       - "4000:4000"
     environment:
-      - NODE_ENV=production
+      - NODE_ENV=development
     env_file:
       - .env
-    depends_on:
-      - sqlite3
